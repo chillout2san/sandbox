@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <p class="has-text-weight-bold is-size-5">
+  <form class="box">
+    <p class="is-size-5 has-text-weight-bold">
       メールアドレスとパスワードで新規登録
     </p>
     <div class="field">
@@ -42,14 +42,16 @@
     <div class="field is-grouped">
       <div class="control">
         <nuxt-link to="/relogin">
-          <button class="button is-primary" @click="signUp">送信</button>
+          <button class="button is-primary" @click="signUp">会員登録</button>
         </nuxt-link>
       </div>
       <div class="control">
-        <button class="button is-primary is-light">キャンセル</button>
+        <button class="button is-light is-primary" @click="clearForm">
+          入力内容をクリア
+        </button>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 
 <script lang="ts">
@@ -66,6 +68,11 @@ export default Vue.extend({
   methods: {
     signUp() {
       this.$accessor.users.signUp([this.name, this.mail, this.password]);
+    },
+    clearForm() {
+      this.name = '';
+      this.mail = '';
+      this.password = '';
     },
   },
 });
