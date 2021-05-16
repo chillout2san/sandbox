@@ -97,8 +97,6 @@ import firebase from 'plugins/firebase';
 export default Vue.extend({
   data() {
     return {
-      enable_alert_function: '有効',
-      disable_alert_function: '無効',
       status: '全て',
     };
   },
