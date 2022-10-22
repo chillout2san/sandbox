@@ -4,6 +4,7 @@ import (
 	"chi_sample/config"
 	"chi_sample/presentation/controller"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -20,6 +21,8 @@ func CreateRoute() *chi.Mux {
 		AllowedMethods:   []string{"POST"},
 		AllowCredentials: true,
 	}))
+	r.Use(middleware.Timeout(time.Second * 10))
+	r.Use(middleware.Recoverer)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
