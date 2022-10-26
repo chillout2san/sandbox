@@ -8,7 +8,6 @@ type env struct {
 	DbUser      string
 	DbPassword  string
 	DbHost      string
-	DbPort      string
 	DbName      string
 }
 
@@ -20,7 +19,6 @@ func init() {
 		DbUser:      os.Getenv("MYSQL_USER"),
 		DbPassword:  os.Getenv("MYSQL_PASSWORD"),
 		DbHost:      os.Getenv("MYSQL_HOST"),
-		DbPort:      os.Getenv("MYSQL_DB_PORT"),
 		DbName:      os.Getenv("MYSQL_DB_NAME"),
 	}
 }
