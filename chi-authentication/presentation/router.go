@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/cors"
 )
 
+// 大元のルーティングを返却する
 func CreateRoute() *chi.Mux {
 	r := chi.NewRouter()
 
@@ -34,7 +35,7 @@ func CreateRoute() *chi.Mux {
 	})
 
 	r.Group(func(r chi.Router) {
-		ac := controller.CreateAccountController()
+		ac := controller.CreateUserController()
 		r.Mount("/account", ac)
 	})
 

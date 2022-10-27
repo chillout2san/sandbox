@@ -1,7 +1,6 @@
 package user
 
 import (
-	"chi_sample/common/utils"
 	"chi_sample/infrastructure"
 	"context"
 	"fmt"
@@ -10,7 +9,8 @@ import (
 type userRepository struct {
 }
 
-func NewAccountRepository() userRepository {
+// ユーザーリポジトリを返却する
+func NewUserRepository() userRepository {
 	return userRepository{}
 }
 
@@ -18,9 +18,7 @@ func NewAccountRepository() userRepository {
 func (a userRepository) Create(id, name, mail, imagePath, password string) error {
 	sql := `INSERT INTO users(id, name, mail, imagePath, password) VALUE(?,?,?,?,?)`
 
-	hashedPassword := utils.CreateHash(password)
-
-	_, err := infrastructure.Db.ExecContext(context.TODO(), sql, id, mail, imagePath, hashedPassword)
+	_, err := infrastructure.Db.ExecContext(context.TODO(), sql, id, mail, imagePath, password)
 
 	if err != nil {
 		return fmt.Errorf("infra/create:%v", err)

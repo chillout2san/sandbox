@@ -1,14 +1,22 @@
 package user
 
-import "errors"
+import (
+	"chi_sample/common/utils"
+	"errors"
+)
 
 type password struct {
 	value string
 }
 
+// 新しいパスワードを作成するファクトリ関数
+// セキュリティ的にuserモデルと分離してある
 func NewPassword(pass string) (password, error) {
 	if pass == "" {
 		return password{}, errors.New("パスワードが空です。")
 	}
-	return password{value: pass}, nil
+
+	hashedPass := utils.CreateHash(pass)
+
+	return password{value: hashedPass}, nil
 }
