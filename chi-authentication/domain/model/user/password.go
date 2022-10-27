@@ -6,7 +6,7 @@ import (
 )
 
 type password struct {
-	value string
+	Value string
 }
 
 // 新しいパスワードを作成するファクトリ関数
@@ -18,5 +18,5 @@ func NewPassword(pass string) (password, error) {
 
 	hashedPass := utils.CreateHash(pass)
 
-	return password{value: hashedPass}, nil
+	return password{Value: hashedPass}, nil
 }

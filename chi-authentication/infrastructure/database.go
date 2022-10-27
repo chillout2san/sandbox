@@ -2,18 +2,33 @@ package infrastructure
 
 import (
 	"chi_sample/config"
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
+	"net"
 
-	_ "github.com/go-sql-driver/mysql"
+	"cloud.google.com/go/cloudsqlconn"
+	"github.com/go-sql-driver/mysql"
 )
 
 var Db *sql.DB
 
 func init() {
 	e := config.Enviroment
-	dsn := fmt.Sprintf("%s:%s@cloudsql(%s)/%s", e.DbUser, e.DbPassword, e.DbHost, e.DbName)
+
+	d, err := cloudsqlconn.NewDialer(context.Background())
+	if err != nil {
+		log.Printf("データベースとの接続に失敗しました。:%v", err)
+	}
+	mysql.RegisterDialContext("cloudsqlconn",
+		func(ctx context.Context, addr string) (net.Conn, error) {
+			return d.Dial(ctx, e.DbHost)
+		})
+
+	dsn := fmt.Sprintf("%s:%s@cloudsqlconn(localhost:3306)/%s?parseTime=true",
+		e.DbUser, e.DbPass, e.DbName)
+
 	db, err := sql.Open("mysql", dsn)
 
 	if err != nil {

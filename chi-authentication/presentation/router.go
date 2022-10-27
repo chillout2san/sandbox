@@ -12,7 +12,7 @@ import (
 )
 
 // 大元のルーティングを返却する
-func CreateRoute() *chi.Mux {
+func NewRouter() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.AllowContentType("application/json"))
@@ -35,7 +35,7 @@ func CreateRoute() *chi.Mux {
 	})
 
 	r.Group(func(r chi.Router) {
-		ac := controller.CreateUserController()
+		ac := controller.NewAccountController()
 		r.Mount("/account", ac)
 	})
 
