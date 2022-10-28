@@ -19,7 +19,7 @@ func init() {
 
 	d, err := cloudsqlconn.NewDialer(context.Background())
 	if err != nil {
-		log.Printf("データベースとの接続に失敗しました。:%v", err)
+		log.Printf("CloudSQLConn NewDaialer failed:%v", err)
 	}
 	mysql.RegisterDialContext("cloudsqlconn",
 		func(ctx context.Context, addr string) (net.Conn, error) {
@@ -32,10 +32,10 @@ func init() {
 	db, err := sql.Open("mysql", dsn)
 
 	if err != nil {
-		log.Printf("データベースとの接続に失敗しました。:%v\n", err)
+		log.Printf("Database connection failed:%v", err)
 		return
 	}
 
 	Db = db
-	log.Println("データベースとの接続に成功しました。")
+	log.Println("Database connection success")
 }
