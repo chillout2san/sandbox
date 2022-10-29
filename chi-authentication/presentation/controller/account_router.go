@@ -11,7 +11,7 @@ import (
 )
 
 var ur = user.NewUserRepository()
-var ri = register.NewAccountInteractor(ur)
+var ri = register.NewRegisterInteractor(ur)
 
 // accountControllerを返却する
 func NewAccountController() *chi.Mux {

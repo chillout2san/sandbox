@@ -5,16 +5,16 @@ import (
 	"chi_sample/domain/user"
 )
 
-type accountInteractor struct {
+type registerInteractor struct {
 	userRepository user.IUserRepository
 }
 
-// accountのinteractorを返却する
-func NewAccountInteractor(ui user.IUserRepository) accountInteractor {
-	return accountInteractor{userRepository: ui}
+// registerのinteractorを返却する
+func NewRegisterInteractor(ui user.IUserRepository) registerInteractor {
+	return registerInteractor{userRepository: ui}
 }
 
-func (ai accountInteractor) Interact(i InputDto) OutputDto {
+func (ri registerInteractor) Interact(i InputDto) OutputDto {
 	u, err := user.NewUser(i.Name, i.Mail, i.ImagePath)
 
 	if err != nil {
@@ -33,7 +33,7 @@ func (ai accountInteractor) Interact(i InputDto) OutputDto {
 		}
 	}
 
-	isRegistered, err := service.CheckRegistered(ai.userRepository, u.Mail)
+	isRegistered, err := service.CheckRegistered(ri.userRepository, u.Mail)
 
 	if err != nil {
 		return OutputDto{
@@ -49,7 +49,7 @@ func (ai accountInteractor) Interact(i InputDto) OutputDto {
 		}
 	}
 
-	err = ai.userRepository.Create(u, p)
+	err = ri.userRepository.Create(u, p)
 
 	if err != nil {
 		return OutputDto{
