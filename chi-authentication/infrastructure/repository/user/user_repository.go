@@ -46,9 +46,11 @@ func (ur userRepository) GetByMail(value string) (user.User, error) {
 		id, name, mail, imagePath string
 	)
 
-	if err := rows.Scan(&id, &name, &mail, &imagePath); err != nil {
-		log.Println("userRepository.GetByMail.rows.Scan failed:", err)
-		return user.User{}, errors.New("ユーザー情報を取得できませんでした。")
+	for rows.Next() {
+		if err := rows.Scan(&id, &name, &mail, &imagePath); err != nil {
+			log.Println("userRepository.GetByMail.rows.Scan failed:", err)
+			return user.User{}, errors.New("ユーザー情報を取得できませんでした。")
+		}
 	}
 
 	user := user.MappedUser(id, name, mail, imagePath)
