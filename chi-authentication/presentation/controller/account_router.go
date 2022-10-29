@@ -48,8 +48,6 @@ func NewAccountController() *chi.Mux {
 			w.WriteHeader(http.StatusInternalServerError)
 			res, _ := json.Marshal(login.OutputDto{
 				Id:         "",
-				Name:       "",
-				ImagePath:  "",
 				Token:      "",
 				ErrMessage: err.Error(),
 			})

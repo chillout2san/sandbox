@@ -20,8 +20,6 @@ func (li loginInteractor) Interact(i InputDto) OutputDto {
 	if err != nil {
 		return OutputDto{
 			Id:         "",
-			Name:       "",
-			ImagePath:  "",
 			Token:      "",
 			ErrMessage: err.Error(),
 		}
@@ -32,8 +30,6 @@ func (li loginInteractor) Interact(i InputDto) OutputDto {
 	if err != nil {
 		return OutputDto{
 			Id:         "",
-			Name:       "",
-			ImagePath:  "",
 			Token:      "",
 			ErrMessage: err.Error(),
 		}
@@ -42,8 +38,6 @@ func (li loginInteractor) Interact(i InputDto) OutputDto {
 	if utils.CreateHash(i.Password) != p.Value {
 		return OutputDto{
 			Id:         "",
-			Name:       "",
-			ImagePath:  "",
 			Token:      "",
 			ErrMessage: "パスワードが異なります。",
 		}
@@ -51,8 +45,6 @@ func (li loginInteractor) Interact(i InputDto) OutputDto {
 
 	return OutputDto{
 		Id:         u.Id,
-		Name:       u.Name,
-		ImagePath:  u.ImagePath,
 		Token:      "正しいtoken",
 		ErrMessage: "",
 	}
