@@ -1,8 +1,8 @@
 package register
 
 import (
-	"chi_sample/domain/model/user"
-	ru "chi_sample/domain/repository/user"
+	"chi_sample/domain/user"
+	ru "chi_sample/domain/user"
 )
 
 type accountInteractor struct {

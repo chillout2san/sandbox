@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-type user struct {
+type User struct {
 	Id        string // 一意のid
 	Name      string // ユーザーの名前
 	Mail      string // ユーザーのメールアドレス
@@ -13,13 +13,13 @@ type user struct {
 }
 
 // 新規ユーザーを作成時に用いるファクトリ関数
-func NewUser(name string, mail string, imagePath string) (user, error) {
+func NewUser(name string, mail string, imagePath string) (User, error) {
 	if name == "" {
-		return user{}, errors.New("名前が空です。")
+		return User{}, errors.New("名前が空です。")
 	}
 
 	if mail == "" {
-		return user{}, errors.New("メールアドレスが空です。")
+		return User{}, errors.New("メールアドレスが空です。")
 	}
 
 	// TODO: imagePathがURLとして正しい形か判断したい
@@ -27,10 +27,10 @@ func NewUser(name string, mail string, imagePath string) (user, error) {
 	id, err := utils.CreateUlid()
 
 	if err != nil {
-		return user{}, err
+		return User{}, err
 	}
 
-	return user{
+	return User{
 		Id:        id.String(),
 		Name:      name,
 		Mail:      mail,
@@ -39,11 +39,11 @@ func NewUser(name string, mail string, imagePath string) (user, error) {
 }
 
 // 既存ユーザーのパース時に用いるファクトリ関数
-func MappedUser(id string, name string, mail string, imagePath string) (user, error) {
-	return user{
+func MappedUser(id string, name string, mail string, imagePath string) User {
+	return User{
 		Id:        id,
 		Name:      name,
 		Mail:      mail,
 		ImagePath: imagePath,
-	}, nil
+	}
 }
