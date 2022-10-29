@@ -43,9 +43,19 @@ func (li loginInteractor) Interact(i InputDto) OutputDto {
 		}
 	}
 
+	token, err := utils.CreateJwt(u.Id)
+
+	if err != nil {
+		return OutputDto{
+			Id:         "",
+			Token:      "",
+			ErrMessage: err.Error(),
+		}
+	}
+
 	return OutputDto{
 		Id:         u.Id,
-		Token:      "正しいtoken",
+		Token:      token,
 		ErrMessage: "",
 	}
 }
