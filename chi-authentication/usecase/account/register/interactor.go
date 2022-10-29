@@ -33,14 +33,7 @@ func (ri registerInteractor) Interact(i InputDto) OutputDto {
 		}
 	}
 
-	isRegistered, err := service.CheckRegistered(ri.userRepository, u.Mail)
-
-	if err != nil {
-		return OutputDto{
-			IsRegistered: false,
-			ErrMessage:   err.Error(),
-		}
-	}
+	isRegistered := service.CheckRegistered(ri.userRepository, u.Mail)
 
 	if isRegistered {
 		return OutputDto{
