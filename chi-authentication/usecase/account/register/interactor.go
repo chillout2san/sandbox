@@ -33,7 +33,7 @@ func (ai accountInteractor) Interact(i InputDto) OutputDto {
 		}
 	}
 
-	err = ai.userRepository.Create(u.Id, u.Name, u.Mail, u.ImagePath, p.Value)
+	err = ai.userRepository.Create(u, p)
 
 	if err != nil {
 		return OutputDto{

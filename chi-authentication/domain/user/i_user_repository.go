@@ -1,6 +1,6 @@
 package user
 
 type IUserRepository interface {
-	Create(id, name, mail, imagePath, password string) error
+	Create(u User, p Password) error
 	GetByMail(value string) (User, error)
 }

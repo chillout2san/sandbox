@@ -5,18 +5,18 @@ import (
 	"errors"
 )
 
-type password struct {
+type Password struct {
 	Value string
 }
 
 // 新しいパスワードを作成するファクトリ関数
 // セキュリティ的にuserモデルと分離してある
-func NewPassword(pass string) (password, error) {
+func NewPassword(pass string) (Password, error) {
 	if pass == "" {
-		return password{}, errors.New("パスワードが空です。")
+		return Password{}, errors.New("パスワードが空です。")
 	}
 
 	hashedPass := utils.CreateHash(pass)
 
-	return password{Value: hashedPass}, nil
+	return Password{Value: hashedPass}, nil
 }
