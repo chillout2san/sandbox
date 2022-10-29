@@ -3,6 +3,7 @@ package controller
 import (
 	"chi_sample/infrastructure/repository/user"
 	"chi_sample/presentation/middleware"
+	"chi_sample/usecase/account/login"
 	"chi_sample/usecase/account/register"
 	"encoding/json"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 
 var ur = user.NewUserRepository()
 var ri = register.NewRegisterInteractor(ur)
+var li = login.NewLoginInteractor(ur)
 
 // accountControllerを返却する
 func NewAccountController() *chi.Mux {
@@ -33,6 +35,29 @@ func NewAccountController() *chi.Mux {
 		}
 
 		result := ri.Interact(inputDto)
+		res, _ := json.Marshal(result)
+		w.Write(res)
+	})
+
+	ac.Post("/login", func(w http.ResponseWriter, r *http.Request) {
+		var inputDto login.InputDto
+
+		err := middleware.MapInputDto(r, &inputDto)
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			res, _ := json.Marshal(login.OutputDto{
+				Id:         "",
+				Name:       "",
+				ImagePath:  "",
+				Token:      "",
+				ErrMessage: err.Error(),
+			})
+			w.Write(res)
+			return
+		}
+
+		result := li.Interact(inputDto)
 		res, _ := json.Marshal(result)
 		w.Write(res)
 	})

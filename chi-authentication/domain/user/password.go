@@ -20,3 +20,9 @@ func NewPassword(pass string) (Password, error) {
 
 	return Password{Value: hashedPass}, nil
 }
+
+// 既に登録されているパスワードをパースするファクトリ関数
+// hash化されている値が入る
+func MappedPassword(pass string) Password {
+	return Password{Value: pass}
+}
