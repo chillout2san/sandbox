@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"chi_sample/common/utils"
 	"chi_sample/infrastructure/repository/user"
 	"chi_sample/presentation/middleware"
 	"chi_sample/usecase/account/login"
@@ -57,6 +58,49 @@ func NewAccountController() *chi.Mux {
 
 		result := li.Interact(inputDto)
 		res, _ := json.Marshal(result)
+		w.Write(res)
+	})
+
+	ac.Post("/check_auth", func(w http.ResponseWriter, r *http.Request) {
+		type OutputDto struct {
+			HasAuth    bool   `json:"hasAuth"`
+			ErrMessage string `json:"errMessage"`
+		}
+
+		var inputDto struct {
+			Id    string `json:"id"`
+			Token string `json:"token"`
+		}
+
+		err := middleware.MapInputDto(r, &inputDto)
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			res, _ := json.Marshal(OutputDto{
+				HasAuth:    false,
+				ErrMessage: err.Error(),
+			})
+			w.Write(res)
+			return
+		}
+
+		err = utils.CheckJwt(inputDto.Id, inputDto.Token)
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			res, _ := json.Marshal(OutputDto{
+				HasAuth:    false,
+				ErrMessage: err.Error(),
+			})
+			w.Write(res)
+			return
+		}
+
+		res, _ := json.Marshal(OutputDto{
+			HasAuth:    true,
+			ErrMessage: "",
+		})
+
 		w.Write(res)
 	})
 

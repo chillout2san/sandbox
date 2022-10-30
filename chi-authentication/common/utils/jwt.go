@@ -13,7 +13,8 @@ import (
 func CreateJwt(id string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":  id,
-		"exp": time.Now().Add(2 * time.Hour),
+		"iat": time.Now().Unix(),
+		"exp": time.Now().Add(2 * time.Hour).Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(config.Enviroment.SecretKey))
@@ -27,32 +28,30 @@ func CreateJwt(id string) (string, error) {
 }
 
 // jwtの正確性を検証する
-func CheckJwt(tokenString string) (bool, error) {
+func CheckJwt(id string, tokenString string) error {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			log.Println("Unexpected signing method:", token.Header["alg"])
 			return nil, errors.New("トークン認証に失敗しました。")
 		}
 
-		return config.Enviroment.SecretKey, nil
+		return []byte(config.Enviroment.SecretKey), nil
 	})
 
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok || !token.Valid {
 		log.Println("Token is invalid.")
-		return false, errors.New("トークン認証に失敗しました。")
+		return errors.New("トークン認証に失敗しました。")
 	}
 
-	exp, _ := claims["exp"].(int64)
-
-	if exp < time.Now().Unix() {
-		return false, errors.New("トークンの有効期限を超過しています。")
+	if id != claims["id"] {
+		return errors.New("トークンの所有者ではありません。")
 	}
 
-	return true, nil
+	return nil
 }
