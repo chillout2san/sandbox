@@ -1,6 +1,7 @@
 package register
 
 import (
+	"chi_sample/common/utils"
 	"chi_sample/domain/service"
 	"chi_sample/domain/user"
 )
@@ -15,7 +16,8 @@ func NewRegisterInteractor(ui user.IUserRepository) registerInteractor {
 }
 
 func (ri registerInteractor) Interact(i InputDto) OutputDto {
-	u, err := user.NewUser(i.Name, i.Mail, i.ImagePath)
+	id, _ := utils.CreateUlid()
+	u, err := user.NewUser(id.String(), i.Name, i.Mail, i.ImagePath)
 
 	if err != nil {
 		return OutputDto{

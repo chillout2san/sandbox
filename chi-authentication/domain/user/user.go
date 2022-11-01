@@ -1,7 +1,6 @@
 package user
 
 import (
-	"chi_sample/common/utils"
 	"errors"
 )
 
@@ -19,7 +18,11 @@ func (u User) IsValid() bool {
 }
 
 // 新規ユーザーを作成時に用いるファクトリ関数
-func NewUser(name string, mail string, imagePath string) (User, error) {
+func NewUser(id string, name string, mail string, imagePath string) (User, error) {
+	if id == "" {
+		return User{}, errors.New("idが空です。")
+	}
+
 	if name == "" {
 		return User{}, errors.New("名前が空です。")
 	}
@@ -30,14 +33,8 @@ func NewUser(name string, mail string, imagePath string) (User, error) {
 
 	// TODO: imagePathがURLとして正しい形か判断したい
 
-	id, err := utils.CreateUlid()
-
-	if err != nil {
-		return User{}, err
-	}
-
 	return User{
-		Id:        id.String(),
+		Id:        id,
 		Name:      name,
 		Mail:      mail,
 		ImagePath: imagePath,
