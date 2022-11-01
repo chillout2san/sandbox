@@ -81,3 +81,40 @@ func TestNewUser(t *testing.T) {
 		})
 	}
 }
+
+func TestMappedUser(t *testing.T) {
+	testcases := []struct {
+		label     string
+		id        string
+		userName  string
+		mail      string
+		imagePath string
+		want1     User
+	}{
+		{
+			label:     "成功",
+			id:        "testid",
+			userName:  "hoge",
+			mail:      "hoge@example.com",
+			imagePath: "https://hoge.com",
+			want1: User{
+				Id:        "testid",
+				Name:      "hoge",
+				Mail:      "hoge@example.com",
+				ImagePath: "https://hoge.com",
+			},
+		},
+	}
+
+	for _, tt := range testcases {
+		t.Run(tt.label, func(t *testing.T) {
+			got := MappedUser(tt.id, tt.userName, tt.mail, tt.imagePath)
+
+			diff1 := cmp.Diff(tt.want1, got)
+
+			if diff1 != "" {
+				t.Errorf("%s failed, diff1: %v", tt.label, diff1)
+			}
+		})
+	}
+}
