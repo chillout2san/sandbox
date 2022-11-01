@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestPassword(t *testing.T) {
+func TestNewPassword(t *testing.T) {
 	testcases := []struct {
 		label string
 		pass  string
@@ -48,6 +48,34 @@ func TestPassword(t *testing.T) {
 
 			if diff2 != "" {
 				t.Errorf("%s failed, diff2: %v", tt.label, diff2)
+			}
+		})
+	}
+}
+
+func TestMappedPassword(t *testing.T) {
+	testcases := []struct {
+		label string
+		pass  string
+		want1 Password
+	}{
+		{
+			label: "成功",
+			pass:  "hogepass",
+			want1: Password{
+				Value: "hogepass",
+			},
+		},
+	}
+
+	for _, tt := range testcases {
+		t.Run(tt.label, func(t *testing.T) {
+			got := MappedPassword(tt.pass)
+
+			diff1 := cmp.Diff(tt.want1, got)
+
+			if diff1 != "" {
+				t.Errorf("%s failed, diff1: %v", tt.label, diff1)
 			}
 		})
 	}
