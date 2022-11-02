@@ -2,6 +2,7 @@ package controller
 
 import (
 	"chi_sample/common/utils"
+	"chi_sample/infrastructure"
 	"chi_sample/infrastructure/repository/user"
 	"chi_sample/presentation/middleware"
 	"chi_sample/usecase/account/login"
@@ -12,7 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-var ur = user.NewUserRepository()
+var ur = user.NewUserRepository(infrastructure.Db)
 var ri = register.NewRegisterInteractor(ur)
 var li = login.NewLoginInteractor(ur)
 

@@ -2,25 +2,26 @@ package user
 
 import (
 	"chi_sample/domain/user"
-	"chi_sample/infrastructure"
 	"context"
+	"database/sql"
 	"errors"
 	"log"
 )
 
 type userRepository struct {
+	db *sql.DB
 }
 
 // ユーザーリポジトリを返却する
-func NewUserRepository() userRepository {
-	return userRepository{}
+func NewUserRepository(db *sql.DB) userRepository {
+	return userRepository{db: db}
 }
 
 // 新しくユーザーを登録する
 func (ur userRepository) Create(u user.User, p user.Password) error {
 	sql := `INSERT INTO users(id, name, mail, imagePath, pass) VALUE(?,?,?,?,?)`
 
-	_, err := infrastructure.Db.ExecContext(context.TODO(), sql, u.Id, u.Name, u.Mail, u.ImagePath, p.Value)
+	_, err := ur.db.ExecContext(context.TODO(), sql, u.Id, u.Name, u.Mail, u.ImagePath, p.Value)
 
 	if err != nil {
 		log.Println("userRepository.Create failed:", err)
@@ -34,7 +35,7 @@ func (ur userRepository) Create(u user.User, p user.Password) error {
 func (ur userRepository) GetByMail(value string) (user.User, error) {
 	sql := `SELECT id, name, mail, imagePath FROM users WHERE mail=?`
 
-	row := infrastructure.Db.QueryRowContext(context.TODO(), sql, value)
+	row := ur.db.QueryRowContext(context.TODO(), sql, value)
 
 	var (
 		id, name, mail, imagePath string
@@ -54,7 +55,7 @@ func (ur userRepository) GetByMail(value string) (user.User, error) {
 func (ur userRepository) GetPassByMail(value string) (user.Password, error) {
 	sql := `SELECT pass FROM users WHERE mail=?`
 
-	row := infrastructure.Db.QueryRowContext(context.TODO(), sql, value)
+	row := ur.db.QueryRowContext(context.TODO(), sql, value)
 
 	var pass string
 
