@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 定数を置く
-DEPLOY_FILE=deploy.yaml
+DEPLOY_FILE="deploy.yaml"
 PROJECT="learngcp-361805"
 
 # mainブランチかどうか確認する
