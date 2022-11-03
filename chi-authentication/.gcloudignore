@@ -24,5 +24,6 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
-# デプロイスクリプト
+# デプロイに関係のないファイル
 deploy.sh
+app.yaml
