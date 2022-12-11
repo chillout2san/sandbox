@@ -9,3 +9,10 @@ env_variables:
   DB_NAME:
   INSTANCE_CONNECTION_NAME:
   JWT_SECRET_KEY:
+
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 2
+  cool_down_period_sec: 180
+  cpu_utilization:
+    target_utilization: 0.6
