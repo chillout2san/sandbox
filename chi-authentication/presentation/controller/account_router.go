@@ -36,7 +36,7 @@ func NewAccountController() *chi.Mux {
 			return
 		}
 
-		result := ri.Interact(inputDto)
+		result := ri.Interact(r.Context(), inputDto)
 		res, _ := json.Marshal(result)
 		w.Write(res)
 	})
@@ -57,7 +57,7 @@ func NewAccountController() *chi.Mux {
 			return
 		}
 
-		result := li.Interact(inputDto)
+		result := li.Interact(r.Context(), inputDto)
 		res, _ := json.Marshal(result)
 		w.Write(res)
 	})

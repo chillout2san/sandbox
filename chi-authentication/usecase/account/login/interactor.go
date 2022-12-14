@@ -3,6 +3,7 @@ package login
 import (
 	"chi_sample/common/utils"
 	"chi_sample/domain/user"
+	"context"
 )
 
 type loginInteractor struct {
@@ -14,8 +15,8 @@ func NewLoginInteractor(ur user.IUserRepository) loginInteractor {
 	return loginInteractor{userRepository: ur}
 }
 
-func (li loginInteractor) Interact(i InputDto) OutputDto {
-	u, err := li.userRepository.GetByMail(i.Mail)
+func (li loginInteractor) Interact(ctx context.Context, i InputDto) OutputDto {
+	u, err := li.userRepository.GetByMail(ctx, i.Mail)
 
 	if err != nil {
 		return OutputDto{
@@ -25,7 +26,7 @@ func (li loginInteractor) Interact(i InputDto) OutputDto {
 		}
 	}
 
-	p, err := li.userRepository.GetPassByMail(i.Mail)
+	p, err := li.userRepository.GetPassByMail(ctx, i.Mail)
 
 	if err != nil {
 		return OutputDto{
