@@ -18,7 +18,7 @@ func NewRouter() *chi.Mux {
 	r.Use(middleware.AllowContentType("application/json"))
 	r.Use(middleware.CleanPath)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{config.Enviroment.AllowOrigin},
+		AllowedOrigins:   []string{config.Environment.AllowOrigin},
 		AllowedMethods:   []string{"POST"},
 		AllowCredentials: true,
 	}))

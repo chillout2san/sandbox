@@ -12,10 +12,10 @@ type env struct {
 	SecretKey   string // jwtの署名に使用するキー
 }
 
-var Enviroment *env
+var Environment *env
 
 func init() {
-	Enviroment = &env{
+	Environment = &env{
 		AllowOrigin: os.Getenv("ALLOW_ORIGIN"),
 		DbUser:      os.Getenv("DB_USER"),
 		DbPass:      os.Getenv("DB_PASS"),

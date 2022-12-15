@@ -17,7 +17,7 @@ func CreateJwt(id string) (string, error) {
 		"exp": time.Now().Add(2 * time.Hour).Unix(),
 	})
 
-	tokenString, err := token.SignedString([]byte(config.Enviroment.SecretKey))
+	tokenString, err := token.SignedString([]byte(config.Environment.SecretKey))
 
 	if err != nil {
 		log.Println("CreateJwt failed:", err)
@@ -35,7 +35,7 @@ func CheckJwt(id string, tokenString string) error {
 			return nil, errors.New("トークン認証に失敗しました。")
 		}
 
-		return []byte(config.Enviroment.SecretKey), nil
+		return []byte(config.Environment.SecretKey), nil
 	})
 
 	if err != nil {

@@ -15,7 +15,7 @@ import (
 var Db *sql.DB
 
 func init() {
-	e := config.Enviroment
+	e := config.Environment
 
 	d, err := cloudsqlconn.NewDialer(context.Background())
 	if err != nil {
