@@ -1,8 +1,6 @@
-name: UnitTest
+name: Test & Build
 
-on:
-  push:
-    branches: main
+on: [pull_request, push]
 
 jobs:
   # 共通処理の実施
