@@ -14,8 +14,8 @@ import (
 )
 
 var ur = user.NewUserRepository(infrastructure.Db)
-var ri = register.NewRegisterInteractor(ur)
-var li = login.NewLoginInteractor(ur)
+var ru = register.NewRegisterUseCase(ur)
+var lu = login.NewLoginUseCase(ur)
 
 // accountControllerを返却する
 func NewAccountController() *chi.Mux {
@@ -36,7 +36,7 @@ func NewAccountController() *chi.Mux {
 			return
 		}
 
-		result := ri.Interact(r.Context(), inputDto)
+		result := ru.Execute(r.Context(), inputDto)
 		res, _ := json.Marshal(result)
 		w.Write(res)
 	})
@@ -57,7 +57,7 @@ func NewAccountController() *chi.Mux {
 			return
 		}
 
-		result := li.Interact(r.Context(), inputDto)
+		result := lu.Execute(r.Context(), inputDto)
 		res, _ := json.Marshal(result)
 		w.Write(res)
 	})

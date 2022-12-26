@@ -6,16 +6,16 @@ import (
 	"context"
 )
 
-type loginInteractor struct {
+type loginUseCase struct {
 	userRepository user.IUserRepository
 }
 
 // loginのinteractorを返却する
-func NewLoginInteractor(ur user.IUserRepository) loginInteractor {
-	return loginInteractor{userRepository: ur}
+func NewLoginUseCase(ur user.IUserRepository) loginUseCase {
+	return loginUseCase{userRepository: ur}
 }
 
-func (li loginInteractor) Interact(ctx context.Context, i InputDto) OutputDto {
+func (li loginUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 	u, err := li.userRepository.GetByMail(ctx, i.Mail)
 
 	if err != nil {

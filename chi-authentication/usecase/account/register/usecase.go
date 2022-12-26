@@ -7,16 +7,16 @@ import (
 	"context"
 )
 
-type registerInteractor struct {
+type registerUseCase struct {
 	userRepository user.IUserRepository
 }
 
 // registerのinteractorを返却する
-func NewRegisterInteractor(ui user.IUserRepository) registerInteractor {
-	return registerInteractor{userRepository: ui}
+func NewRegisterUseCase(ui user.IUserRepository) registerUseCase {
+	return registerUseCase{userRepository: ui}
 }
 
-func (ri registerInteractor) Interact(ctx context.Context, i InputDto) OutputDto {
+func (ri registerUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 	id, _ := utils.CreateUlid()
 	u, err := user.NewUser(id.String(), i.Name, i.Mail, i.ImagePath)
 
