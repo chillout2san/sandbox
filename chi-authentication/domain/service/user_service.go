@@ -6,8 +6,14 @@ import (
 )
 
 // 既に会員登録されているかどうかをメールアドレスで判定する
-func CheckRegistered(ctx context.Context, ur user.IUserRepository, mail string) bool {
-	user, _ := ur.GetByMail(ctx, mail)
+func CheckRegistered(ctx context.Context, ur user.IUserRepository, mail string) (bool, error) {
+	user, err := ur.GetByMail(ctx, mail)
 
-	return user.IsValid()
+	if err != nil {
+		return false, err
+	}
+
+	isValid := user.Id() != ""
+
+	return isValid, nil
 }

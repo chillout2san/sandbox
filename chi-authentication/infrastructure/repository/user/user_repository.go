@@ -1,7 +1,7 @@
 package user
 
 import (
-	"chi_sample/domain/user"
+	duser "chi_sample/domain/user"
 	"context"
 	"database/sql"
 	"errors"
@@ -18,7 +18,7 @@ func NewUserRepository(db *sql.DB) userRepository {
 }
 
 // 新しくユーザーを登録する
-func (ur userRepository) Create(ctx context.Context, u user.User, p user.Password) error {
+func (ur userRepository) Create(ctx context.Context, u duser.User, p duser.Password) error {
 	sql := `INSERT INTO users(id, name, mail, imagePath, pass) VALUE(?,?,?,?,?)`
 
 	_, err := ur.db.ExecContext(ctx, sql, u.Id, u.Name, u.Mail, u.ImagePath, p.Value)
@@ -32,7 +32,7 @@ func (ur userRepository) Create(ctx context.Context, u user.User, p user.Passwor
 }
 
 // メールアドレスをキーとして、登録されているユーザー情報を取得する
-func (ur userRepository) GetByMail(ctx context.Context, value string) (user.User, error) {
+func (ur userRepository) GetByMail(ctx context.Context, value string) (duser.User, error) {
 	sql := `SELECT id, name, mail, imagePath FROM users WHERE mail=?`
 
 	row := ur.db.QueryRowContext(ctx, sql, value)
@@ -43,16 +43,16 @@ func (ur userRepository) GetByMail(ctx context.Context, value string) (user.User
 
 	if err := row.Scan(&id, &name, &mail, &imagePath); err != nil {
 		log.Println("userRepository.GetByMail.rows.Scan failed:", err)
-		return user.User{}, errors.New("ユーザー情報を取得できませんでした。")
+		return nil, errors.New("ユーザー情報を取得できませんでした。")
 	}
 
-	user := user.MappedUser(id, name, mail, imagePath)
+	user := duser.MappedUser(id, name, mail, imagePath)
 
 	return user, nil
 }
 
 // メールアドレスをキーとして、登録されているパスワードのハッシュ値を取得する
-func (ur userRepository) GetPassByMail(ctx context.Context, value string) (user.Password, error) {
+func (ur userRepository) GetPassByMail(ctx context.Context, value string) (duser.Password, error) {
 	sql := `SELECT pass FROM users WHERE mail=?`
 
 	row := ur.db.QueryRowContext(ctx, sql, value)
@@ -61,10 +61,10 @@ func (ur userRepository) GetPassByMail(ctx context.Context, value string) (user.
 
 	if err := row.Scan(&pass); err != nil {
 		log.Println("userRepository.GetPassByMail.row.Scan failed", err)
-		return user.Password{}, errors.New("パスワード情報を取得できませんでした。")
+		return duser.Password{}, errors.New("パスワード情報を取得できませんでした。")
 	}
 
-	p := user.MappedPassword(pass)
+	p := duser.MappedPassword(pass)
 
 	return p, nil
 }

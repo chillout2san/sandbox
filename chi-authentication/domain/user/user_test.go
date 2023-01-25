@@ -23,7 +23,7 @@ func TestNewUser(t *testing.T) {
 			userName:  "hogeName",
 			mail:      "hoge@example.com",
 			imagePath: "https://hoge.com",
-			want1:     User{},
+			want1:     user{},
 			want2:     errors.New("idが空です。"),
 		},
 		{
@@ -32,7 +32,7 @@ func TestNewUser(t *testing.T) {
 			userName:  "",
 			mail:      "hoge@example.com",
 			imagePath: "https://hoge.com",
-			want1:     User{},
+			want1:     user{},
 			want2:     errors.New("名前が空です。"),
 		},
 		{
@@ -41,7 +41,7 @@ func TestNewUser(t *testing.T) {
 			userName:  "hogeName",
 			mail:      "",
 			imagePath: "https://hoge.com",
-			want1:     User{},
+			want1:     user{},
 			want2:     errors.New("メールアドレスが空です。"),
 		},
 		{
@@ -50,11 +50,11 @@ func TestNewUser(t *testing.T) {
 			userName:  "hoge",
 			mail:      "hoge@example.com",
 			imagePath: "https://hoge.com",
-			want1: User{
-				Id:        "testid",
-				Name:      "hoge",
-				Mail:      "hoge@example.com",
-				ImagePath: "https://hoge.com",
+			want1: user{
+				id:        "testid",
+				name:      "hoge",
+				mail:      "hoge@example.com",
+				imagePath: "https://hoge.com",
 			},
 			want2: nil,
 		},
@@ -97,11 +97,11 @@ func TestMappedUser(t *testing.T) {
 			userName:  "hoge",
 			mail:      "hoge@example.com",
 			imagePath: "https://hoge.com",
-			want1: User{
-				Id:        "testid",
-				Name:      "hoge",
-				Mail:      "hoge@example.com",
-				ImagePath: "https://hoge.com",
+			want1: user{
+				id:        "testid",
+				name:      "hoge",
+				mail:      "hoge@example.com",
+				imagePath: "https://hoge.com",
 			},
 		},
 	}

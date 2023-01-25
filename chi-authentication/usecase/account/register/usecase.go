@@ -36,7 +36,14 @@ func (ri registerUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 		}
 	}
 
-	isRegistered := service.CheckRegistered(ctx, ri.userRepository, u.Mail)
+	isRegistered, err := service.CheckRegistered(ctx, ri.userRepository, u.Mail())
+
+	if err != nil {
+		return OutputDto{
+			IsRegistered: false,
+			ErrMessage:   err.Error(),
+		}
+	}
 
 	if isRegistered {
 		return OutputDto{

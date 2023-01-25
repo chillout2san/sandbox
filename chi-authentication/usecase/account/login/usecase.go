@@ -44,7 +44,7 @@ func (li loginUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 		}
 	}
 
-	token, err := utils.CreateJwt(u.Id)
+	token, err := utils.CreateJwt(u.Id())
 
 	if err != nil {
 		return OutputDto{
@@ -55,7 +55,7 @@ func (li loginUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 	}
 
 	return OutputDto{
-		Id:         u.Id,
+		Id:         u.Id(),
 		Token:      token,
 		ErrMessage: "",
 	}
