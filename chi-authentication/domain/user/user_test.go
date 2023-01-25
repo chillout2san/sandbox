@@ -23,7 +23,7 @@ func TestNewUser(t *testing.T) {
 			userName:  "hogeName",
 			mail:      "hoge@example.com",
 			imagePath: "https://hoge.com",
-			want1:     user{},
+			want1:     &user{},
 			want2:     errors.New("idが空です。"),
 		},
 		{
@@ -32,7 +32,7 @@ func TestNewUser(t *testing.T) {
 			userName:  "",
 			mail:      "hoge@example.com",
 			imagePath: "https://hoge.com",
-			want1:     user{},
+			want1:     &user{},
 			want2:     errors.New("名前が空です。"),
 		},
 		{
@@ -41,7 +41,7 @@ func TestNewUser(t *testing.T) {
 			userName:  "hogeName",
 			mail:      "",
 			imagePath: "https://hoge.com",
-			want1:     user{},
+			want1:     &user{},
 			want2:     errors.New("メールアドレスが空です。"),
 		},
 		{
@@ -50,7 +50,7 @@ func TestNewUser(t *testing.T) {
 			userName:  "hoge",
 			mail:      "hoge@example.com",
 			imagePath: "https://hoge.com",
-			want1: user{
+			want1: &user{
 				id:        "testid",
 				name:      "hoge",
 				mail:      "hoge@example.com",
@@ -64,7 +64,8 @@ func TestNewUser(t *testing.T) {
 		t.Run(tt.label, func(t *testing.T) {
 			got, err := NewUser(tt.id, tt.userName, tt.mail, tt.imagePath)
 
-			diff1 := cmp.Diff(tt.want1, got)
+			opt := cmp.AllowUnexported(user{})
+			diff1 := cmp.Diff(tt.want1, got, opt)
 			var diff2 string
 
 			if diff1 != "" {
@@ -97,7 +98,7 @@ func TestMappedUser(t *testing.T) {
 			userName:  "hoge",
 			mail:      "hoge@example.com",
 			imagePath: "https://hoge.com",
-			want1: user{
+			want1: &user{
 				id:        "testid",
 				name:      "hoge",
 				mail:      "hoge@example.com",
@@ -110,7 +111,8 @@ func TestMappedUser(t *testing.T) {
 		t.Run(tt.label, func(t *testing.T) {
 			got := MappedUser(tt.id, tt.userName, tt.mail, tt.imagePath)
 
-			diff1 := cmp.Diff(tt.want1, got)
+			opt := cmp.AllowUnexported(user{})
+			diff1 := cmp.Diff(tt.want1, got, opt)
 
 			if diff1 != "" {
 				t.Errorf("%s failed, diff1: %v", tt.label, diff1)

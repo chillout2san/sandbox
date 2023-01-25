@@ -11,6 +11,9 @@ type User interface {
 	Name() string
 	Mail() string
 	ImagePath() string
+	SetName(name string)
+	SetMail(mail string)
+	SetImagePath(imagePath string)
 }
 
 // ユーザーモデル
@@ -21,51 +24,51 @@ type user struct {
 	imagePath string // ユーザーの画像のパス
 }
 
-func (u user) Id() string {
+func (u *user) Id() string {
 	return u.id
 }
 
-func (u user) Name() string {
+func (u *user) Name() string {
 	return u.name
 }
 
-func (u user) Mail() string {
+func (u *user) Mail() string {
 	return u.mail
 }
 
-func (u user) ImagePath() string {
+func (u *user) ImagePath() string {
 	return u.imagePath
 }
 
-func (u *user) setName(name string) {
+func (u *user) SetName(name string) {
 	u.name = name
 }
 
-func (u *user) setMail(mail string) {
+func (u *user) SetMail(mail string) {
 	u.mail = mail
 }
 
-func (u *user) setImagePath(imagePath string) {
+func (u *user) SetImagePath(imagePath string) {
 	u.imagePath = imagePath
 }
 
 // 新規ユーザーを作成時に用いるファクトリ関数
 func NewUser(id string, name string, mail string, imagePath string) (User, error) {
 	if id == "" {
-		return user{}, errors.New("idが空です。")
+		return &user{}, errors.New("idが空です。")
 	}
 
 	if name == "" {
-		return user{}, errors.New("名前が空です。")
+		return &user{}, errors.New("名前が空です。")
 	}
 
 	if mail == "" {
-		return user{}, errors.New("メールアドレスが空です。")
+		return &user{}, errors.New("メールアドレスが空です。")
 	}
 
 	// TODO: imagePathがURLとして正しい形か判断したい
 
-	return user{
+	return &user{
 		id:        id,
 		name:      name,
 		mail:      mail,
@@ -75,7 +78,7 @@ func NewUser(id string, name string, mail string, imagePath string) (User, error
 
 // 既存ユーザーのパース時に用いるファクトリ関数
 func MappedUser(id string, name string, mail string, imagePath string) User {
-	return user{
+	return &user{
 		id:        id,
 		name:      name,
 		mail:      mail,
