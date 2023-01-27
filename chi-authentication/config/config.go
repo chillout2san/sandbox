@@ -10,6 +10,7 @@ type env struct {
 	DbHost      string // GCPのCloudSQLの接続名
 	DbName      string // データベースの名前
 	SecretKey   string // jwtの署名に使用するキー
+	DbFlag      string // CloudSQLを使うかDockerのMySQLを使うかのフラグ
 }
 
 var Environment *env
@@ -22,5 +23,6 @@ func init() {
 		DbHost:      os.Getenv("INSTANCE_CONNECTION_NAME"),
 		DbName:      os.Getenv("DB_NAME"),
 		SecretKey:   os.Getenv("JWT_SECRET_KEY"),
+		DbFlag:      os.Getenv("DB_FLAG"),
 	}
 }
