@@ -27,3 +27,5 @@
 # デプロイに関係のないファイル
 deploy.sh
 app.yaml
+docker-compose.yml
+./mysql
