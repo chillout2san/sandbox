@@ -35,18 +35,22 @@ func (ur userRepository) Create(ctx context.Context, u duser.User, p duser.Passw
 func (ur userRepository) GetByMail(ctx context.Context, value string) (duser.User, error) {
 	sql := `SELECT id, name, mail, imagePath FROM users WHERE mail=?`
 
-	row := ur.db.QueryRowContext(ctx, sql, value)
+	row, err := ur.db.QueryContext(ctx, sql, value)
+
+	if err != nil {
+		log.Println("userRepository.GetByMail.rows.Scan failed:", err)
+		return nil, errors.New("ユーザー情報を取得できませんでした。")
+	}
 
 	var (
 		id, name, mail, imagePath string
 	)
 
-	if err := row.Scan(&id, &name, &mail, &imagePath); err != nil {
-		if err.Error() == "sql: no rows in result set" {
-			return nil, nil
+	for row.Next() {
+		if err := row.Scan(&id, &name, &mail, &imagePath); err != nil {
+			log.Println("userRepository.GetByMail.rows.Scan failed:", err)
+			return nil, errors.New("ユーザー情報を取得できませんでした。")
 		}
-		log.Println("userRepository.GetByMail.rows.Scan failed:", err)
-		return nil, errors.New("ユーザー情報を取得できませんでした。")
 	}
 
 	user := duser.MappedUser(id, name, mail, imagePath)
