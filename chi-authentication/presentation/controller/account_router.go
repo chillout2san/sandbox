@@ -27,7 +27,7 @@ func NewAccountController() *chi.Mux {
 		err := middleware.MapInputDto(r, &inputDto)
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
 			res, _ := json.Marshal(register.OutputDto{
 				IsRegistered: false,
 				ErrMessage:   err.Error(),
@@ -47,7 +47,7 @@ func NewAccountController() *chi.Mux {
 		err := middleware.MapInputDto(r, &inputDto)
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
 			res, _ := json.Marshal(login.OutputDto{
 				Id:         "",
 				Token:      "",
@@ -76,7 +76,7 @@ func NewAccountController() *chi.Mux {
 		err := middleware.MapInputDto(r, &inputDto)
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
 			res, _ := json.Marshal(OutputDto{
 				HasAuth:    false,
 				ErrMessage: err.Error(),
