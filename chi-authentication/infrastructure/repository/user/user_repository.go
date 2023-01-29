@@ -62,16 +62,20 @@ func (ur userRepository) GetByMail(ctx context.Context, value string) (duser.Use
 func (ur userRepository) GetPassByMail(ctx context.Context, value string) (duser.Password, error) {
 	sql := `SELECT pass FROM users WHERE mail=?`
 
-	row := ur.db.QueryRowContext(ctx, sql, value)
+	row, err := ur.db.QueryContext(ctx, sql, value)
+
+	if err != nil {
+		log.Println("userRepository.GetPassByMail.row.Scan failed", err)
+		return duser.Password{}, errors.New("パスワード情報を取得できませんでした。")
+	}
 
 	var pass string
 
-	if err := row.Scan(&pass); err != nil {
-		if err.Error() == "sql: no rows in result set" {
-			return duser.Password{}, nil
+	for row.Next() {
+		if err := row.Scan(&pass); err != nil {
+			log.Println("userRepository.GetPassByMail.row.Scan failed", err)
+			return duser.Password{}, errors.New("パスワード情報を取得できませんでした。")
 		}
-		log.Println("userRepository.GetPassByMail.row.Scan failed", err)
-		return duser.Password{}, errors.New("パスワード情報を取得できませんでした。")
 	}
 
 	p := duser.MappedPassword(pass)
