@@ -42,6 +42,8 @@ func (ur userRepository) GetByMail(ctx context.Context, value string) (duser.Use
 		return nil, errors.New("ユーザー情報を取得できませんでした。")
 	}
 
+	defer row.Close()
+
 	var (
 		id, name, mail, imagePath string
 	)
@@ -68,6 +70,8 @@ func (ur userRepository) GetPassByMail(ctx context.Context, value string) (duser
 		log.Println("userRepository.GetPassByMail.row.Scan failed", err)
 		return duser.Password{}, errors.New("パスワード情報を取得できませんでした。")
 	}
+
+	defer row.Close()
 
 	var pass string
 
