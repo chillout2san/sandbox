@@ -21,7 +21,7 @@ func NewUserRepository(db *sql.DB) userRepository {
 func (ur userRepository) Create(ctx context.Context, u duser.User, p duser.Password) error {
 	sql := `INSERT INTO users(id, name, mail, imagePath, pass) VALUE(?,?,?,?,?)`
 
-	_, err := ur.db.ExecContext(ctx, sql, u.Id, u.Name, u.Mail, u.ImagePath, p.Value)
+	_, err := ur.db.ExecContext(ctx, sql, u.Id(), u.Name(), u.Mail(), u.ImagePath(), p.Value)
 
 	if err != nil {
 		log.Println("userRepository.Create failed:", err)
@@ -42,6 +42,9 @@ func (ur userRepository) GetByMail(ctx context.Context, value string) (duser.Use
 	)
 
 	if err := row.Scan(&id, &name, &mail, &imagePath); err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			return nil, nil
+		}
 		log.Println("userRepository.GetByMail.rows.Scan failed:", err)
 		return nil, errors.New("ユーザー情報を取得できませんでした。")
 	}
@@ -60,6 +63,9 @@ func (ur userRepository) GetPassByMail(ctx context.Context, value string) (duser
 	var pass string
 
 	if err := row.Scan(&pass); err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			return duser.Password{}, nil
+		}
 		log.Println("userRepository.GetPassByMail.row.Scan failed", err)
 		return duser.Password{}, errors.New("パスワード情報を取得できませんでした。")
 	}

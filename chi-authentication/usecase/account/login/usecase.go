@@ -26,6 +26,14 @@ func (li loginUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 		}
 	}
 
+	if u == nil {
+		return OutputDto{
+			Id:         "",
+			Token:      "",
+			ErrMessage: "ユーザーが存在しません。",
+		}
+	}
+
 	p, err := li.userRepository.GetPassByMail(ctx, i.Mail)
 
 	if err != nil {

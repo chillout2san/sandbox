@@ -13,7 +13,9 @@ func CheckRegistered(ctx context.Context, ur user.IUserRepository, mail string) 
 		return false, err
 	}
 
-	isValid := user.Id() != ""
+	if user == nil {
+		return false, err
+	}
 
-	return isValid, nil
+	return true, nil
 }
