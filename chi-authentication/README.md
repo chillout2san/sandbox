@@ -3,7 +3,7 @@
 1. Goのアプリケーションが使用するenvファイルを生成します。特に中身を書き換える必要はありません。<br>
 
 ```bash
-cd chi_authentication
+cd chi_authentication/api
 cp .env.sample .env
 ```
 
@@ -45,7 +45,7 @@ docker compose ps
 
 ### デプロイ手順
 環境構築手順は完了しているものとみなして進めます。
-なおDBはCloudSQL、ホストはGoogleAppEngineで行う前提です。
+なおDBはCloudSQL、ホストはGoogleAppEngineのflex環境で行う前提です。
 
 1. `main`ブランチにいることを確認した上で、デプロイスクリプトを叩く。`deploy.yaml`ファイルが作成されることを確認。
 
