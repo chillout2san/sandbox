@@ -10,12 +10,12 @@ services:
     ports:
       - 8080:8080
     env_file:
-      - ./.env
+      - ./api/.env
     depends_on:
       - db
     volumes:
       - type: bind
-        source: ./
+        source: ./api
         target: /go/src
 
   db:

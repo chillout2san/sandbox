@@ -25,7 +25,10 @@
 *.out
 
 # デプロイに関係のないファイル
+./.github
+./.vscode
 deploy.sh
 app.yaml
 docker-compose.yml
 ./mysql
+README.md

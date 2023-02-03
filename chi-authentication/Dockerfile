@@ -2,7 +2,7 @@ FROM golang:1.19-alpine
 
 WORKDIR /app
 
-COPY . .
+COPY ./api .
 
 RUN go mod tidy
 
