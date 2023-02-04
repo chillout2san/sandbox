@@ -9,12 +9,12 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-// 有効期限2時間のjwtを発行する
+// cookieの有効期間より1分長い有効期限11分のjwtを発行する
 func CreateJwt(id string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":  id,
 		"iat": time.Now().Unix(),
-		"exp": time.Now().Add(2 * time.Hour).Unix(),
+		"exp": time.Now().Add(11 * time.Minute).Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(config.Environment.SecretKey))

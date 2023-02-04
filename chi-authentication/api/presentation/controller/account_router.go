@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -82,7 +83,7 @@ func NewAccountController() *chi.Mux {
 			Name:     "token",
 			Value:    result.Token,
 			Path:     "/",
-			MaxAge:   60 * 60,
+			Expires:  time.Now().Add(10 * time.Minute),
 			Secure:   config.Environment.COOKIE_SECURE,
 			HttpOnly: true,
 			SameSite: http.SameSiteStrictMode,
