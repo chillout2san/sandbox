@@ -62,7 +62,7 @@ func TestNewUser(t *testing.T) {
 
 	for _, tt := range testcases {
 		t.Run(tt.label, func(t *testing.T) {
-			got, err := NewUser(tt.id, tt.userName, tt.mail, tt.imagePath)
+			got, err := New(tt.id, tt.userName, tt.mail, tt.imagePath)
 
 			opt := cmp.AllowUnexported(user{})
 			diff1 := cmp.Diff(tt.want1, got, opt)
@@ -109,7 +109,7 @@ func TestMappedUser(t *testing.T) {
 
 	for _, tt := range testcases {
 		t.Run(tt.label, func(t *testing.T) {
-			got := MappedUser(tt.id, tt.userName, tt.mail, tt.imagePath)
+			got := Reconstruct(tt.id, tt.userName, tt.mail, tt.imagePath)
 
 			opt := cmp.AllowUnexported(user{})
 			diff1 := cmp.Diff(tt.want1, got, opt)

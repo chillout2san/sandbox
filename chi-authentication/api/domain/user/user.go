@@ -53,7 +53,7 @@ func (u *user) SetImagePath(imagePath string) {
 }
 
 // 新規ユーザーを作成時に用いるファクトリ関数
-func NewUser(id string, name string, mail string, imagePath string) (User, error) {
+func New(id string, name string, mail string, imagePath string) (User, error) {
 	if id == "" {
 		return &user{}, errors.New("idが空です。")
 	}
@@ -77,7 +77,7 @@ func NewUser(id string, name string, mail string, imagePath string) (User, error
 }
 
 // 既存ユーザーのパース時に用いるファクトリ関数
-func MappedUser(id string, name string, mail string, imagePath string) User {
+func Reconstruct(id string, name string, mail string, imagePath string) User {
 	return &user{
 		id:        id,
 		name:      name,

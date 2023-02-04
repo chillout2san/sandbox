@@ -18,7 +18,7 @@ func NewRegisterUseCase(ui user.IUserRepository) registerUseCase {
 
 func (ri registerUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 	id, _ := utils.CreateUlid()
-	u, err := user.NewUser(id.String(), i.Name, i.Mail, i.ImagePath)
+	u, err := user.New(id.String(), i.Name, i.Mail, i.ImagePath)
 
 	if err != nil {
 		return OutputDto{

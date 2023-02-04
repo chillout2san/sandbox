@@ -55,7 +55,7 @@ func (ur userRepository) GetByMail(ctx context.Context, value string) (duser.Use
 		}
 	}
 
-	user := duser.MappedUser(id, name, mail, imagePath)
+	user := duser.Reconstruct(id, name, mail, imagePath)
 
 	return user, nil
 }
