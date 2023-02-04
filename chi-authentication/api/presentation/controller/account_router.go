@@ -8,7 +8,9 @@ import (
 	"chi_sample/usecase/account/login"
 	"chi_sample/usecase/account/register"
 	"encoding/json"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -56,10 +58,9 @@ func NewAccountController() *chi.Mux {
 
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			res, _ := json.Marshal(login.OutputDto{
-				Id:         "",
-				Token:      "",
-				ErrMessage: err.Error(),
+			res, _ := json.Marshal(map[string]interface{}{
+				"id":         "",
+				"errMessage": err.Error(),
 			})
 			w.Write(res)
 			return
@@ -67,14 +68,27 @@ func NewAccountController() *chi.Mux {
 
 		result := lu.Execute(r.Context(), inputDto)
 
-		if result.ErrMessage == "" {
+		if result.ErrMessage != "" {
 			w.WriteHeader(http.StatusInternalServerError)
-			res, _ := json.Marshal(result)
+			res, _ := json.Marshal(map[string]interface{}{
+				"id":         "",
+				"errMessage": err.Error(),
+			})
 			w.Write(res)
 			return
 		}
 
-		res, _ := json.Marshal(result)
+		cookie := &http.Cookie{
+			Name:    "token",
+			Value:   result.Token,
+			Expires: time.Now().Add(5 * time.Minute),
+		}
+		http.SetCookie(w, cookie)
+
+		res, _ := json.Marshal(map[string]interface{}{
+			"id": result.Id,
+		})
+
 		w.Write(res)
 	})
 
@@ -85,23 +99,35 @@ func NewAccountController() *chi.Mux {
 		}
 
 		var inputDto struct {
-			Id    string `json:"id"`
-			Token string `json:"token"`
+			Id string `json:"id"`
 		}
 
 		err := middleware.MapInputDto(r, &inputDto)
 
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			res, _ := json.Marshal(OutputDto{
-				HasAuth:    false,
-				ErrMessage: err.Error(),
+			res, _ := json.Marshal(map[string]interface{}{
+				"hasAuth":    false,
+				"errMessage": err.Error(),
 			})
 			w.Write(res)
 			return
 		}
 
-		err = utils.CheckJwt(inputDto.Id, inputDto.Token)
+		token, err := r.Cookie("token")
+
+		if err != nil {
+			log.Println("check_auth failed:", err)
+			w.WriteHeader(http.StatusBadRequest)
+			res, _ := json.Marshal(map[string]interface{}{
+				"hasAuth":    false,
+				"errMessage": "トークンが確認できません。",
+			})
+			w.Write(res)
+			return
+		}
+
+		err = utils.CheckJwt(inputDto.Id, token.Value)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
