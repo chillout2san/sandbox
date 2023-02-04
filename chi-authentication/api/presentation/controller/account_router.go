@@ -37,6 +37,14 @@ func NewAccountController() *chi.Mux {
 		}
 
 		result := ru.Execute(r.Context(), inputDto)
+
+		if result.ErrMessage == "" {
+			w.WriteHeader(http.StatusInternalServerError)
+			res, _ := json.Marshal(result)
+			w.Write(res)
+			return
+		}
+
 		res, _ := json.Marshal(result)
 		w.Write(res)
 	})
@@ -58,6 +66,14 @@ func NewAccountController() *chi.Mux {
 		}
 
 		result := lu.Execute(r.Context(), inputDto)
+
+		if result.ErrMessage == "" {
+			w.WriteHeader(http.StatusInternalServerError)
+			res, _ := json.Marshal(result)
+			w.Write(res)
+			return
+		}
+
 		res, _ := json.Marshal(result)
 		w.Write(res)
 	})
