@@ -2,6 +2,7 @@ package controller
 
 import (
 	"chi_sample/common/utils"
+	"chi_sample/config"
 	"chi_sample/infrastructure"
 	"chi_sample/infrastructure/repository/user"
 	"chi_sample/presentation/middleware"
@@ -10,7 +11,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -79,9 +79,13 @@ func NewAccountController() *chi.Mux {
 		}
 
 		cookie := &http.Cookie{
-			Name:    "token",
-			Value:   result.Token,
-			Expires: time.Now().Add(5 * time.Minute),
+			Name:     "token",
+			Value:    result.Token,
+			Path:     "/",
+			MaxAge:   60 * 60,
+			Secure:   config.Environment.COOKIE_SECURE,
+			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode,
 		}
 		http.SetCookie(w, cookie)
 
