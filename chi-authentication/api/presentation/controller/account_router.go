@@ -31,9 +31,9 @@ func NewAccountController() *chi.Mux {
 
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			res, _ := json.Marshal(register.OutputDto{
-				IsRegistered: false,
-				ErrMessage:   err.Error(),
+			res, _ := json.Marshal(map[string]interface{}{
+				"isRegistered": false,
+				"errMessage":   err.Error(),
 			})
 			w.Write(res)
 			return
@@ -41,14 +41,19 @@ func NewAccountController() *chi.Mux {
 
 		result := ru.Execute(r.Context(), inputDto)
 
-		if result.ErrMessage == "" {
+		if result.ErrMessage != "" {
 			w.WriteHeader(http.StatusInternalServerError)
-			res, _ := json.Marshal(result)
+			res, _ := json.Marshal(map[string]interface{}{
+				"isRegistered": false,
+				"errMessage":   result.ErrMessage,
+			})
 			w.Write(res)
 			return
 		}
 
-		res, _ := json.Marshal(result)
+		res, _ := json.Marshal(map[string]interface{}{
+			"isRegistered": true,
+		})
 		w.Write(res)
 	})
 
@@ -98,11 +103,6 @@ func NewAccountController() *chi.Mux {
 	})
 
 	ac.Post("/check_auth", func(w http.ResponseWriter, r *http.Request) {
-		type OutputDto struct {
-			HasAuth    bool   `json:"hasAuth"`
-			ErrMessage string `json:"errMessage"`
-		}
-
 		var inputDto struct {
 			Id string `json:"id"`
 		}
@@ -136,17 +136,16 @@ func NewAccountController() *chi.Mux {
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			res, _ := json.Marshal(OutputDto{
-				HasAuth:    false,
-				ErrMessage: err.Error(),
+			res, _ := json.Marshal(map[string]interface{}{
+				"hasAuth":    false,
+				"errMessage": err.Error(),
 			})
 			w.Write(res)
 			return
 		}
 
-		res, _ := json.Marshal(OutputDto{
-			HasAuth:    true,
-			ErrMessage: "",
+		res, _ := json.Marshal(map[string]interface{}{
+			"hasAuth": true,
 		})
 
 		w.Write(res)
