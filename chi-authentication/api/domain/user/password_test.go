@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewPassword(t *testing.T) {
@@ -35,20 +35,8 @@ func TestNewPassword(t *testing.T) {
 		t.Run(tt.label, func(t *testing.T) {
 			got, err := NewPassword(tt.pass)
 
-			diff1 := cmp.Diff(tt.want1, got)
-			var diff2 string
-
-			if diff1 != "" {
-				t.Errorf("%s failed, diff1: %v", tt.label, diff1)
-			}
-
-			if err != nil && tt.want2 != nil {
-				diff2 = cmp.Diff(err.Error(), tt.want2.Error())
-			}
-
-			if diff2 != "" {
-				t.Errorf("%s failed, diff2: %v", tt.label, diff2)
-			}
+			assert.Equal(t, tt.want1, got)
+			assert.Equal(t, tt.want2, err)
 		})
 	}
 }
@@ -72,11 +60,7 @@ func TestMappedPassword(t *testing.T) {
 		t.Run(tt.label, func(t *testing.T) {
 			got := MappedPassword(tt.pass)
 
-			diff1 := cmp.Diff(tt.want1, got)
-
-			if diff1 != "" {
-				t.Errorf("%s failed, diff1: %v", tt.label, diff1)
-			}
+			assert.Equal(t, tt.want1, got)
 		})
 	}
 }

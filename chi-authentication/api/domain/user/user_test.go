@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewUser(t *testing.T) {
@@ -27,7 +27,7 @@ func TestNewUser(t *testing.T) {
 			want2:     errors.New("idが空です。"),
 		},
 		{
-			label:     "失敗：名前が空",
+			label:     "失敗:名前が空",
 			id:        "testid",
 			userName:  "",
 			mail:      "hoge@example.com",
@@ -36,7 +36,7 @@ func TestNewUser(t *testing.T) {
 			want2:     errors.New("名前が空です。"),
 		},
 		{
-			label:     "失敗：メールアドレスが空",
+			label:     "失敗:メールアドレスが空",
 			id:        "testid",
 			userName:  "hogeName",
 			mail:      "",
@@ -64,21 +64,8 @@ func TestNewUser(t *testing.T) {
 		t.Run(tt.label, func(t *testing.T) {
 			got, err := New(tt.id, tt.userName, tt.mail, tt.imagePath)
 
-			opt := cmp.AllowUnexported(user{})
-			diff1 := cmp.Diff(tt.want1, got, opt)
-			var diff2 string
-
-			if diff1 != "" {
-				t.Errorf("%s failed, diff1: %v", tt.label, diff1)
-			}
-
-			if err != nil && tt.want2 != nil {
-				diff2 = cmp.Diff(err.Error(), tt.want2.Error())
-			}
-
-			if diff2 != "" {
-				t.Errorf("%s failed, diff2: %v", tt.label, diff2)
-			}
+			assert.Equal(t, tt.want1, got)
+			assert.Equal(t, tt.want2, err)
 		})
 	}
 }
@@ -111,12 +98,7 @@ func TestMappedUser(t *testing.T) {
 		t.Run(tt.label, func(t *testing.T) {
 			got := Reconstruct(tt.id, tt.userName, tt.mail, tt.imagePath)
 
-			opt := cmp.AllowUnexported(user{})
-			diff1 := cmp.Diff(tt.want1, got, opt)
-
-			if diff1 != "" {
-				t.Errorf("%s failed, diff1: %v", tt.label, diff1)
-			}
+			assert.Equal(t, tt.want1, got)
 		})
 	}
 }
