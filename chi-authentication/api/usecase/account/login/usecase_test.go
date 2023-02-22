@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestExecute2(t *testing.T) {
+func TestExecute(t *testing.T) {
 	t.Run("失敗:GetByMailがエラーの場合", func(t *testing.T) {
 		m := new(user.MockUserRepository)
 		m.On("GetByMail", mock.Anything, mock.Anything).
