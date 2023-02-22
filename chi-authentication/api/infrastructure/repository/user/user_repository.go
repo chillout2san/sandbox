@@ -38,8 +38,8 @@ func (ur userRepository) GetByMail(ctx context.Context, value string) (duser.Use
 	row, err := ur.db.QueryContext(ctx, sql, value)
 
 	if err != nil {
-		log.Println("userRepository.GetByMail.rows.Scan failed:", err)
-		return nil, errors.New("ユーザー情報を取得できませんでした。")
+		log.Println("userRepository.GetByMail.QueryContext failed:", err)
+		return duser.Reconstruct("", "", "", ""), errors.New("ユーザー情報を取得できませんでした。")
 	}
 
 	defer row.Close()
@@ -51,7 +51,7 @@ func (ur userRepository) GetByMail(ctx context.Context, value string) (duser.Use
 	for row.Next() {
 		if err := row.Scan(&id, &name, &mail, &imagePath); err != nil {
 			log.Println("userRepository.GetByMail.rows.Scan failed:", err)
-			return nil, errors.New("ユーザー情報を取得できませんでした。")
+			return duser.Reconstruct("", "", "", ""), errors.New("ユーザー情報を取得できませんでした。")
 		}
 	}
 

@@ -26,7 +26,7 @@ func (li loginUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 		}
 	}
 
-	if u == nil {
+	if u.Id() == "" {
 		return OutputDto{
 			Id:         "",
 			Token:      "",
