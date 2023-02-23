@@ -58,7 +58,7 @@ func TestMappedPassword(t *testing.T) {
 
 	for _, tt := range testcases {
 		t.Run(tt.label, func(t *testing.T) {
-			got := MappedPassword(tt.pass)
+			got := ReconstructPassWord(tt.pass)
 
 			assert.Equal(t, tt.want1, got)
 		})

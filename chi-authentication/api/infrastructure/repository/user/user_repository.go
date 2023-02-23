@@ -82,7 +82,7 @@ func (ur userRepository) GetPassByMail(ctx context.Context, value string) (duser
 		}
 	}
 
-	p := duser.MappedPassword(pass)
+	p := duser.ReconstructPassWord(pass)
 
 	return p, nil
 }

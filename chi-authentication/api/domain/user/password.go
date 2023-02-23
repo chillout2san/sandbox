@@ -23,6 +23,6 @@ func NewPassword(pass string) (Password, error) {
 
 // 既に登録されているパスワードをパースするファクトリ関数
 // hash化されている値が入る
-func MappedPassword(pass string) Password {
+func ReconstructPassWord(pass string) Password {
 	return Password{Value: pass}
 }
