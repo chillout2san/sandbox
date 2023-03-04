@@ -135,7 +135,7 @@ func NewAccountController() *chi.Mux {
 		err = utils.CheckJwt(inputDto.Id, token.Value)
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusUnauthorized)
 			res, _ := json.Marshal(map[string]interface{}{
 				"hasAuth":    false,
 				"errMessage": err.Error(),
