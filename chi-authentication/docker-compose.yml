@@ -2,11 +2,10 @@ version: '3.8'
 
 services:
   go:
-    container_name: go
+    container_name: chi_go_backend
     build:
       context: ./
       dockerfile: Dockerfile
-    tty: true
     ports:
       - 8080:8080
     env_file:
@@ -19,21 +18,29 @@ services:
         target: /go/src
 
   db:
-    container_name: db
+    container_name: chi_mysql_db
     build:
       context: ./mysql
       dockerfile: Dockerfile
-    tty: true
     platform: linux/x86_64
     ports:
       - 3306:3306
-    env_file:
-      - ./mysql/.env
+    environment:
+      - LC_ALL="C.utf8"
+      - MYSQL_DATABASE=test_database
+      - MYSQL_USER=test_user
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=root_password
     volumes:
       - type: volume
-        source: mysql_test_volume
+        source: chi_mysql_db_volume
         target: /var/lib/mysql
+      - type: bind
+        source: ./mysql/my.cnf
+        target: /etc/mysql/conf.d/my.cnf
+      - type: bind
+        source: ./mysql/schema/users.sql
+        target: /docker-entrypoint-initdb.d/init.sql
 
 volumes:
-  mysql_test_volume:
-    name: mysql_test_volume
+  chi_mysql_db_volume:
