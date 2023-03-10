@@ -21,5 +21,6 @@ func MapInputDto[T interface{}](r *http.Request, inputData *T) error {
 		log.Println("Can't parse request body:", err)
 		return errors.New("入力した値に誤りがあります。")
 	}
+
 	return nil
 }

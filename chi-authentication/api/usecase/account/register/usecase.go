@@ -19,7 +19,6 @@ func NewRegisterUseCase(ui user.IUserRepository) registerUseCase {
 func (ri registerUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 	id, _ := utils.CreateUlid()
 	u, err := user.New(id.String(), i.Name, i.Mail, i.ImagePath)
-
 	if err != nil {
 		return OutputDto{
 			IsRegistered: false,
@@ -28,7 +27,6 @@ func (ri registerUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 	}
 
 	p, err := user.NewPassword(i.Password)
-
 	if err != nil {
 		return OutputDto{
 			IsRegistered: false,
@@ -37,7 +35,6 @@ func (ri registerUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 	}
 
 	isRegistered, err := service.CheckRegistered(ctx, ri.userRepository, u.Mail())
-
 	if err != nil {
 		return OutputDto{
 			IsRegistered: false,
@@ -53,7 +50,6 @@ func (ri registerUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 	}
 
 	err = ri.userRepository.Create(ctx, u, p)
-
 	if err != nil {
 		return OutputDto{
 			IsRegistered: false,

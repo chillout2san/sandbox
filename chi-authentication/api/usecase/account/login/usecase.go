@@ -17,7 +17,6 @@ func NewLoginUseCase(ur user.IUserRepository) loginUseCase {
 
 func (li loginUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 	u, err := li.userRepository.GetByMail(ctx, i.Mail)
-
 	if err != nil {
 		return OutputDto{
 			Id:         "",
@@ -35,7 +34,6 @@ func (li loginUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 	}
 
 	p, err := li.userRepository.GetPassByMail(ctx, i.Mail)
-
 	if err != nil {
 		return OutputDto{
 			Id:         "",
@@ -53,7 +51,6 @@ func (li loginUseCase) Execute(ctx context.Context, i InputDto) OutputDto {
 	}
 
 	token, err := utils.CreateJwt(u.Id())
-
 	if err != nil {
 		return OutputDto{
 			Id:         "",

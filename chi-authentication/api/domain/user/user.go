@@ -67,7 +67,6 @@ func New(id string, name string, mail string, imagePath string) (User, error) {
 	}
 
 	// TODO: imagePathがURLとして正しい形か判断したい
-
 	return &user{
 		id:        id,
 		name:      name,

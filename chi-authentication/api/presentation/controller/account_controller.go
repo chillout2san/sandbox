@@ -28,7 +28,6 @@ func NewAccountController() *chi.Mux {
 		var inputDto register.InputDto
 
 		err := middleware.MapInputDto(r, &inputDto)
-
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			res, _ := json.Marshal(map[string]interface{}{
@@ -54,6 +53,7 @@ func NewAccountController() *chi.Mux {
 		res, _ := json.Marshal(map[string]interface{}{
 			"isRegistered": true,
 		})
+
 		w.Write(res)
 	})
 
@@ -61,7 +61,6 @@ func NewAccountController() *chi.Mux {
 		var inputDto login.InputDto
 
 		err := middleware.MapInputDto(r, &inputDto)
-
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			res, _ := json.Marshal(map[string]interface{}{
@@ -73,7 +72,6 @@ func NewAccountController() *chi.Mux {
 		}
 
 		result := lu.Execute(r.Context(), inputDto)
-
 		if result.ErrMessage != "" {
 			w.WriteHeader(http.StatusInternalServerError)
 			res, _ := json.Marshal(map[string]interface{}{
@@ -108,7 +106,6 @@ func NewAccountController() *chi.Mux {
 		}
 
 		err := middleware.MapInputDto(r, &inputDto)
-
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			res, _ := json.Marshal(map[string]interface{}{
@@ -120,7 +117,6 @@ func NewAccountController() *chi.Mux {
 		}
 
 		token, err := r.Cookie("token")
-
 		if err != nil {
 			log.Println("check_auth failed:", err)
 			w.WriteHeader(http.StatusBadRequest)
@@ -133,7 +129,6 @@ func NewAccountController() *chi.Mux {
 		}
 
 		err = utils.CheckJwt(inputDto.Id, token.Value)
-
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			res, _ := json.Marshal(map[string]interface{}{
