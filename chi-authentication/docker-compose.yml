@@ -39,8 +39,8 @@ services:
         source: ./mysql/my.cnf
         target: /etc/mysql/conf.d/my.cnf
       - type: bind
-        source: ./mysql/schema/users.sql
-        target: /docker-entrypoint-initdb.d/init.sql
+        source: ./mysql/schema
+        target: /docker-entrypoint-initdb.d
 
 volumes:
   chi_mysql_db_volume:
