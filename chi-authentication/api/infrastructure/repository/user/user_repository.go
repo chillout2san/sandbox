@@ -4,8 +4,7 @@ import (
 	duser "chi_sample/domain/user"
 	"context"
 	"database/sql"
-	"errors"
-	"log"
+	"fmt"
 )
 
 type userRepository struct {
@@ -21,16 +20,15 @@ func NewUserRepository(db *sql.DB) userRepository {
 func (ur userRepository) Create(ctx context.Context, u duser.User, p duser.Password) error {
 	tx, err := ur.db.Begin()
 	if err != nil {
-		log.Println("userRepository.Create  beginning of transaction failed:", err)
 		tx.Rollback()
-		return errors.New("ユーザー登録できませんでした。")
+		return fmt.Errorf("userRepository.Create db.Begin failed:%v;", err)
 	}
 
-	_, err = tx.ExecContext(ctx, insertUser, u.Id(), u.Name(), u.Mail(), u.ImagePath(), p.Value)
-	if err != nil {
-		log.Println("userRepository.Create ExecContext failed:", err)
+	sql := `INSERT INTO users(id, name, mail, imagePath, pass) VALUE(?,?,?,?,?)`
+
+	if _, err = tx.ExecContext(ctx, sql, u.Id(), u.Name(), u.Mail(), u.ImagePath(), p.Value); err != nil {
 		tx.Rollback()
-		return errors.New("ユーザー登録できませんでした。")
+		return fmt.Errorf("userRepository.Create ExecContext failed:%v;", err)
 	}
 
 	tx.Commit()
@@ -41,16 +39,16 @@ func (ur userRepository) Create(ctx context.Context, u duser.User, p duser.Passw
 func (ur userRepository) GetByMail(ctx context.Context, value string) (duser.User, error) {
 	tx, err := ur.db.Begin()
 	if err != nil {
-		log.Println("userRepository.GetByMail beginning of transaction failed:", err)
 		tx.Rollback()
-		return duser.Reconstruct("", "", "", ""), errors.New("ユーザー情報を取得できませんでした。")
+		return duser.Reconstruct("", "", "", ""), fmt.Errorf("userRepository.GetByMail beginning of transaction failed:%v;", err)
 	}
 
-	row, err := ur.db.QueryContext(ctx, selectUserByMail, value)
+	sql := `SELECT id, name, mail, imagePath FROM users WHERE mail=?`
+
+	row, err := ur.db.QueryContext(ctx, sql, value)
 	if err != nil {
-		log.Println("userRepository.GetByMail QueryContext failed:", err)
 		tx.Rollback()
-		return duser.Reconstruct("", "", "", ""), errors.New("ユーザー情報を取得できませんでした。")
+		return duser.Reconstruct("", "", "", ""), fmt.Errorf("userRepository.GetByMail QueryContext failed:%v;", err)
 	}
 
 	defer row.Close()
@@ -61,9 +59,8 @@ func (ur userRepository) GetByMail(ctx context.Context, value string) (duser.Use
 
 	for row.Next() {
 		if err := row.Scan(&id, &name, &mail, &imagePath); err != nil {
-			log.Println("userRepository.GetByMail rows.Scan failed:", err)
 			tx.Rollback()
-			return duser.Reconstruct("", "", "", ""), errors.New("ユーザー情報を取得できませんでした。")
+			return duser.Reconstruct("", "", "", ""), fmt.Errorf("userRepository.GetByMail rows.Scan failed:%v;", err)
 		}
 	}
 
@@ -76,16 +73,16 @@ func (ur userRepository) GetByMail(ctx context.Context, value string) (duser.Use
 func (ur userRepository) GetPassByMail(ctx context.Context, value string) (duser.Password, error) {
 	tx, err := ur.db.Begin()
 	if err != nil {
-		log.Println("userRepository.GetPassByMail beginning of transaction failed:", err)
 		tx.Rollback()
-		return duser.Password{}, errors.New("ユーザー情報を取得できませんでした。")
+		return duser.Password{}, fmt.Errorf("userRepository.GetPassByMail beginning of transaction failed:%v;", err)
 	}
 
-	row, err := tx.QueryContext(ctx, selectUserPassByMail, value)
+	sql := `SELECT pass FROM users WHERE mail=?`
+
+	row, err := tx.QueryContext(ctx, sql, value)
 	if err != nil {
-		log.Println("userRepository.GetPassByMail.row.Scan failed", err)
 		tx.Rollback()
-		return duser.Password{}, errors.New("パスワード情報を取得できませんでした。")
+		return duser.Password{}, fmt.Errorf("userRepository.GetPassByMail.row.Scan failed:%v;", err)
 	}
 
 	defer row.Close()
@@ -94,9 +91,9 @@ func (ur userRepository) GetPassByMail(ctx context.Context, value string) (duser
 
 	for row.Next() {
 		if err := row.Scan(&pass); err != nil {
-			log.Println("userRepository.GetPassByMail.row.Scan failed", err)
+
 			tx.Rollback()
-			return duser.Password{}, errors.New("パスワード情報を取得できませんでした。")
+			return duser.Password{}, fmt.Errorf("userRepository.GetPassByMail.row.Scan failed:%v;", err)
 		}
 	}
 
