@@ -24,12 +24,12 @@ func init() {
 }
 
 func setUpCloudSQL() {
-	fmt.Println("Trying db connection by setUpCloudSQL...")
+	log.Println("Trying db connection by setUpCloudSQL...")
 	e := config.Environment
 
 	d, err := cloudsqlconn.NewDialer(context.Background())
 	if err != nil {
-		log.Println("CloudSQLConn NewDaialer failed:", err)
+		log.Fatalf("CloudSQLConn NewDaialer failed:%v;", err)
 	}
 
 	mysql.RegisterDialContext("cloudsqlconn",
@@ -42,8 +42,7 @@ func setUpCloudSQL() {
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		log.Println("Database connection failed:", err)
-		return
+		log.Fatalf("Database connection failed:%v;", err)
 	}
 
 	Db = db
@@ -73,8 +72,7 @@ func setUpDockerMySQL() {
 	// FormatDSNメソッドで文字列に変換
 	db, err := sql.Open("mysql", c.FormatDSN())
 	if err != nil {
-		log.Println("Database connection failed:", err)
-		return
+		log.Fatalf("Database connection failed:%v;", err)
 	}
 
 	Db = db
