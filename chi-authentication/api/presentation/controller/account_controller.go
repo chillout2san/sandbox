@@ -32,7 +32,7 @@ func NewAccountController() *chi.Mux {
 			w.WriteHeader(http.StatusBadRequest)
 			res, _ := json.Marshal(map[string]interface{}{
 				"isRegistered": false,
-				"errMessage":   err.Error(),
+				"errMessage":   "リクエストに誤りがあります。",
 			})
 			w.Write(res)
 			return
@@ -65,7 +65,7 @@ func NewAccountController() *chi.Mux {
 			w.WriteHeader(http.StatusBadRequest)
 			res, _ := json.Marshal(map[string]interface{}{
 				"id":         "",
-				"errMessage": err.Error(),
+				"errMessage": "リクエストに誤りがあります。",
 			})
 			w.Write(res)
 			return
@@ -110,7 +110,7 @@ func NewAccountController() *chi.Mux {
 			w.WriteHeader(http.StatusBadRequest)
 			res, _ := json.Marshal(map[string]interface{}{
 				"hasAuth":    false,
-				"errMessage": err.Error(),
+				"errMessage": "リクエストに誤りがあります。",
 			})
 			w.Write(res)
 			return
