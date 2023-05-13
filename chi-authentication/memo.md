@@ -14,6 +14,15 @@ gcloud run deploy chi-authentication --region us-central1 \
 --timeout=240 \
 --concurrency 5 \
 --max-instances 5 \
---execution-environment gen2
+--execution-environment gen2 \
+--ingress internal-and-cloud-load-balancing
 
-*次はウェブトラフィックの処理から読む
+### ロードバランサー
+gcloud compute addresses create admin-ip \
+    --network-tier=PREMIUM \
+    --ip-version=IPV4 \
+    --global
+
+gcloud compute addresses describe admin-ip \
+    --format="get(address)" \
+    --global
