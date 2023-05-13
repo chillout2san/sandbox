@@ -27,8 +27,8 @@
 # デプロイに関係のないファイル
 ./.github
 ./.vscode
+./artifacts
 deploy.sh
-app.yaml
 docker-compose.yml
 ./mysql
 README.md
