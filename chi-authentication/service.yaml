@@ -1,0 +1,28 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: chi-authentication
+  annotations:
+    run.googleapis.com/ingress: internal-and-cloud-load-balancing
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/descritpion: 'chi-authenticationのバックエンドサービスです。'
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/startup-cpu-boost: 'false'
+        run.googleapis.com/cpu-throttling: 'true'
+        autoscaling.knative.dev/maxScale: '5'
+        autoscaling.knative.dev/minScale: '0'
+    spec:
+      containers:
+      - image: us-central1-docker.pkg.dev/learngcp-361805/chi-authentication/backend:latest
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        env:
+        - name: DB_FLAG
+          value: GCP
+      timeoutSeconds: 300
+      containerConcurrency: 80

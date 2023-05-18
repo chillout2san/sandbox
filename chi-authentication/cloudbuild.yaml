@@ -1,0 +1,17 @@
+# バックエンドコンテナのビルド
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'build backend image'
+  args: [ 'build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/chi-authentication/backend:latest', '.' ]
+  waitFor: ['-']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'push backend image'
+  args: ['push',
+          'us-central1-docker.pkg.dev/$PROJECT_ID/chi-authentication/backend:latest']
+  waitFor: ['build backend image']
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'deploy backend service'
+  args: ['run', 'services', 'replace', 'service.yaml', '--region', 'us-central1', '--platform', 'managed']
+  waitFor: ['push backend image']
