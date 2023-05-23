@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: chi-authentication
   annotations:
-    run.googleapis.com/ingress: internal-and-cloud-load-balancing
+    run.googleapis.com/ingress: all
 spec:
   template:
     metadata:
