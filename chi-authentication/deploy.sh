@@ -51,7 +51,7 @@ if [[ $? == 1 ]]; then
 fi
 
 # 認証なしにユーザーがコールできるようにする
-# ロードバランサー経由でコールされるようになったら消す
+# --authenticatedのコマンドラインバージョン
 gcloud run services set-iam-policy chi-authentication policy.yaml
 
 printf "${BLUE}デプロイが完了しました。"
