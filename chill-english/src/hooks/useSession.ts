@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Session, Phrase } from "@/lib/types";
-import { createSession, addPhrase, getSessions } from "@/lib/firestore";
+import { createSession, addPhrase, getSessions, mergePhrases } from "@/lib/firestore";
 
 const ACTIVE_SESSION_KEY = "chill-english-active-session";
 
@@ -15,6 +15,7 @@ interface UseSessionResult {
   createNewSession: (name: string) => Promise<void>;
   setActiveSession: (id: string) => void;
   addPhraseToSession: (japaneseText: string, englishText: string) => Promise<void>;
+  mergePhrasesInSession: (sessionId: string) => Promise<void>;
 }
 
 async function ensureAuth(): Promise<string> {
@@ -111,5 +112,26 @@ export function useSession(): UseSessionResult {
     [activeSessionId, sessions]
   );
 
-  return { sessions, activeSessionId, isLoading, createNewSession, setActiveSession, addPhraseToSession };
+  const mergePhrasesInSession = useCallback(
+    async (sessionId: string) => {
+      const phrases = sessions.find((s) => s.id === sessionId)?.phrases ?? [];
+      if (phrases.length < 2) return;
+      const newId = await mergePhrases(sessionId, phrases);
+      const merged: Phrase = {
+        id: newId,
+        japaneseText: phrases.map((p) => p.japaneseText).join("\n"),
+        englishText: phrases.map((p) => p.englishText).join(" "),
+        order: 0,
+        createdAt: new Date(),
+      };
+      setSessions((prev) =>
+        prev.map((s) =>
+          s.id === sessionId ? { ...s, phrases: [merged] } : s
+        )
+      );
+    },
+    [sessions]
+  );
+
+  return { sessions, activeSessionId, isLoading, createNewSession, setActiveSession, addPhraseToSession, mergePhrasesInSession };
 }

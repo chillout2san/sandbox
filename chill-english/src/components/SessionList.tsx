@@ -12,13 +12,18 @@ interface SessionCardProps {
   playingId: string | null;
   onSelectSession: (id: string) => void;
   onPlay: (text: string, id: string) => void;
+  onMergePhrases: (sessionId: string) => Promise<void>;
 }
 
-function SessionCard({ session, isActive, playingId, onSelectSession, onPlay }: SessionCardProps) {
+function SessionCard({ session, isActive, playingId, onSelectSession, onPlay, onMergePhrases }: SessionCardProps) {
   const [phrasePage, setPhrasePage] = useState(0);
   const phrases: Phrase[] = session.phrases ?? [];
   const totalPhrasePages = Math.ceil(phrases.length / PAGE_SIZE);
   const pagedPhrases = phrases.slice(phrasePage * PAGE_SIZE, (phrasePage + 1) * PAGE_SIZE);
+  const wordCount = phrases.reduce(
+    (sum, p) => sum + p.englishText.trim().split(/\s+/).filter(Boolean).length,
+    0
+  );
 
   return (
     <div
@@ -32,11 +37,22 @@ function SessionCard({ session, isActive, playingId, onSelectSession, onPlay }: 
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <p className="text-sm font-semibold text-gray-800">{session.name}</p>
+          <span className="text-xs text-gray-400">{wordCount} words</span>
           {isActive && (
             <span className="text-xs text-emerald-600 font-medium">選択中</span>
           )}
         </div>
-        <span className="text-xs text-gray-400">{phrases.length} 件</span>
+        <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
+          {phrases.length >= 2 && (
+            <button
+              onClick={() => onMergePhrases(session.id)}
+              className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              結合
+            </button>
+          )}
+          <span className="text-xs text-gray-400">{phrases.length} 件</span>
+        </div>
       </div>
 
       {pagedPhrases.length > 0 && (
@@ -83,6 +99,7 @@ interface SessionListProps {
   playingId: string | null;
   onSelectSession: (id: string) => void;
   onPlay: (text: string, id: string) => void;
+  onMergePhrases: (sessionId: string) => Promise<void>;
 }
 
 export function SessionList({
@@ -91,6 +108,7 @@ export function SessionList({
   playingId,
   onSelectSession,
   onPlay,
+  onMergePhrases,
 }: SessionListProps) {
   const [page, setPage] = useState(0);
   const totalPages = Math.ceil(sessions.length / PAGE_SIZE);
@@ -116,6 +134,7 @@ export function SessionList({
             playingId={playingId}
             onSelectSession={onSelectSession}
             onPlay={onPlay}
+            onMergePhrases={onMergePhrases}
           />
         ))}
       </div>

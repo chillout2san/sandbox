@@ -8,6 +8,7 @@ import {
   orderBy,
   query,
   where,
+  writeBatch,
   Timestamp,
 } from "firebase/firestore";
 import { db } from "./firebase";
@@ -61,6 +62,35 @@ export async function getPhrases(sessionId: string): Promise<Phrase[]> {
       createdAt: (data.createdAt as Timestamp)?.toDate() ?? new Date(),
     };
   });
+}
+
+export async function mergePhrases(sessionId: string, phrases: Phrase[]): Promise<string> {
+  const batch = writeBatch(db);
+  const phrasesRef = collection(db, "sessions", sessionId, "phrases");
+
+  // 既存フレーズを全削除
+  for (const phrase of phrases) {
+    batch.delete(doc(phrasesRef, phrase.id));
+  }
+  await batch.commit();
+
+  // 結合フレーズを1件追加
+  const japaneseText = phrases.map((p) => p.japaneseText).join("\n");
+  const englishText = phrases.map((p) => p.englishText).join(" ");
+  const ref = await addDoc(phrasesRef, {
+    japaneseText,
+    englishText,
+    order: 0,
+    createdAt: serverTimestamp(),
+  });
+
+  await setDoc(
+    doc(db, "sessions", sessionId),
+    { updatedAt: serverTimestamp() },
+    { merge: true }
+  );
+
+  return ref.id;
 }
 
 export async function getSessions(userId: string): Promise<Session[]> {

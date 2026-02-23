@@ -1,5 +1,5 @@
 locals {
-  project_id = "chill-english"
+  project_id = "chill-english-dev"
   region     = "asia-northeast1"
 }
 
@@ -53,6 +53,12 @@ resource "google_project_service" "apikeys" {
   disable_on_destroy = false
 }
 
+# Identity Platform API 有効化（Authentication に必要）
+resource "google_project_service" "identitytoolkit" {
+  service            = "identitytoolkit.googleapis.com"
+  disable_on_destroy = false
+}
+
 # TTS 用 API キー
 resource "google_apikeys_key" "tts" {
   name         = "chill-english-tts"
@@ -70,8 +76,20 @@ resource "google_apikeys_key" "tts" {
 # Firebase プロジェクト
 resource "google_firebase_project" "default" {
   provider = google-beta
-
   depends_on = [google_project_service.firebase]
+}
+
+# 匿名認証
+resource "google_identity_platform_config" "default" {
+  provider = google-beta
+
+  sign_in {
+    anonymous {
+      enabled = true
+    }
+  }
+
+  depends_on = [google_project_service.identitytoolkit, google_firebase_project.default]
 }
 
 # Firestore データベース

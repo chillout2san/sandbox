@@ -9,7 +9,7 @@ import { useSession } from "@/hooks/useSession";
 
 export default function Home() {
   const { candidates, isLoading: isTranslating, error, translate, clearCandidates } = useTranslate();
-  const { sessions, activeSessionId, isLoading: isSessionLoading, createNewSession, setActiveSession, addPhraseToSession } = useSession();
+  const { sessions, activeSessionId, isLoading: isSessionLoading, createNewSession, setActiveSession, addPhraseToSession, mergePhrasesInSession } = useSession();
   const [currentJapanese, setCurrentJapanese] = useState("");
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [newSessionName, setNewSessionName] = useState("");
@@ -154,6 +154,7 @@ export default function Home() {
               playingId={playingId}
               onSelectSession={setActiveSession}
               onPlay={handlePlay}
+              onMergePhrases={mergePhrasesInSession}
             />
           )}
         </div>
