@@ -97,6 +97,7 @@ resource "google_firestore_database" "default" {
   name        = "(default)"
   location_id = local.region
   type        = "FIRESTORE_NATIVE"
+  deletion_policy = "DELETE"
 
   depends_on = [google_firebase_project.default]
 }
@@ -105,6 +106,7 @@ resource "google_firestore_database" "default" {
 resource "google_firebase_web_app" "default" {
   provider     = google-beta
   display_name = "Chill English"
+  deletion_policy = "DELETE"
 
   depends_on = [google_firebase_project.default]
 }
