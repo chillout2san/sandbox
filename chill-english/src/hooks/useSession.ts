@@ -1,73 +1,82 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import {
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut as firebaseSignOut,
+  User,
+} from "firebase/auth";
+import { auth, googleProvider } from "@/lib/firebase";
 import { Session, Phrase } from "@/lib/types";
 import { createSession, addPhrase, getSessions, mergePhrases } from "@/lib/firestore";
 
 const ACTIVE_SESSION_KEY = "chill-english-active-session";
+const ALLOWED_EMAIL = process.env.NEXT_PUBLIC_ALLOWED_EMAIL;
 
 interface UseSessionResult {
+  user: User | null;
+  isAuthorized: boolean;
   sessions: Session[];
   activeSessionId: string | null;
   isLoading: boolean;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
   createNewSession: (name: string) => Promise<void>;
   setActiveSession: (id: string) => void;
   addPhraseToSession: (japaneseText: string, englishText: string) => Promise<void>;
   mergePhrasesInSession: (sessionId: string) => Promise<void>;
 }
 
-async function ensureAuth(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      unsubscribe();
-      if (user) {
-        resolve(user.uid);
-      } else {
-        signInAnonymously(auth)
-          .then(({ user: newUser }) => resolve(newUser.uid))
-          .catch(reject);
-      }
-    });
-  });
-}
-
 export function useSession(): UseSessionResult {
+  const [user, setUser] = useState<User | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const init = async () => {
-      setIsLoading(true);
-      try {
-        const uid = await ensureAuth();
-        setUserId(uid);
-        const allSessions = await getSessions(uid);
-        setSessions(allSessions);
+  const isAuthorized = !!user && (!ALLOWED_EMAIL || user.email === ALLOWED_EMAIL);
 
-        const stored = localStorage.getItem(ACTIVE_SESSION_KEY);
-        if (stored && allSessions.some((s) => s.id === stored)) {
-          setActiveSessionId(stored);
-        } else if (allSessions.length > 0) {
-          setActiveSessionId(allSessions[0].id);
-          localStorage.setItem(ACTIVE_SESSION_KEY, allSessions[0].id);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (u) => {
+      setUser(u);
+      const authorized = !!u && (!ALLOWED_EMAIL || u.email === ALLOWED_EMAIL);
+      if (authorized) {
+        setIsLoading(true);
+        try {
+          const allSessions = await getSessions(u!.uid);
+          setSessions(allSessions);
+          const stored = localStorage.getItem(ACTIVE_SESSION_KEY);
+          if (stored && allSessions.some((s) => s.id === stored)) {
+            setActiveSessionId(stored);
+          } else if (allSessions.length > 0) {
+            setActiveSessionId(allSessions[0].id);
+            localStorage.setItem(ACTIVE_SESSION_KEY, allSessions[0].id);
+          }
+        } catch (err) {
+          console.error("Session init error:", err);
         }
-      } catch (err) {
-        console.error("Session init error:", err);
-      } finally {
-        setIsLoading(false);
+      } else {
+        setSessions([]);
+        setActiveSessionId(null);
       }
-    };
-    init();
+      setIsLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  const signIn = useCallback(async () => {
+    await signInWithPopup(auth, googleProvider);
+  }, []);
+
+  const signOut = useCallback(async () => {
+    await firebaseSignOut(auth);
+    localStorage.removeItem(ACTIVE_SESSION_KEY);
   }, []);
 
   const createNewSession = useCallback(
     async (name: string) => {
-      if (!userId) return;
-      const id = await createSession(userId, name);
+      if (!user) return;
+      const id = await createSession(user.uid, name);
       const newSession: Session = {
         id,
         name,
@@ -79,7 +88,7 @@ export function useSession(): UseSessionResult {
       setActiveSessionId(id);
       localStorage.setItem(ACTIVE_SESSION_KEY, id);
     },
-    [userId]
+    [user]
   );
 
   const setActiveSession = useCallback((id: string) => {
@@ -133,5 +142,17 @@ export function useSession(): UseSessionResult {
     [sessions]
   );
 
-  return { sessions, activeSessionId, isLoading, createNewSession, setActiveSession, addPhraseToSession, mergePhrasesInSession };
+  return {
+    user,
+    isAuthorized,
+    sessions,
+    activeSessionId,
+    isLoading,
+    signIn,
+    signOut,
+    createNewSession,
+    setActiveSession,
+    addPhraseToSession,
+    mergePhrasesInSession,
+  };
 }
