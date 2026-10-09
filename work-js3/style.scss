@@ -1,0 +1,16 @@
+html {
+  font-family: serif;
+}
+
+.container {
+  display: flex;
+
+  & > div {
+    font-weight: bold;
+    padding-right: 10px;
+    
+    &:last-child {
+      padding-right: 0px;
+    }
+  }
+}
