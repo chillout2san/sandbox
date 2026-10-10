@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package sample.v1;
+
+option go_package = "connect-sample/gen/sample/v1;samplev1";
+
+// Hoge はサンプル用のリソース。
+message Hoge {
+  string id = 1;
+  string name = 2;
+}
+
+message CreateHogeRequest {
+  string name = 1;
+}
+
+message CreateHogeResponse {
+  Hoge hoge = 1;
+}
+
+message GetHogeRequest {
+  string id = 1;
+}
+
+message GetHogeResponse {
+  Hoge hoge = 1;
+}
+
+service SampleService {
+  // CreateHoge は Hoge を作成する。
+  rpc CreateHoge(CreateHogeRequest) returns (CreateHogeResponse) {}
+
+  // GetHoge は Hoge を 1 件取得する。
+  rpc GetHoge(GetHogeRequest) returns (GetHogeResponse) {}
+}
