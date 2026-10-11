@@ -145,6 +145,38 @@ pass=20 fail=0
 ★ の 2 件が肝で、**設定を触らずに**新しい feature が制約され、
 新しいサブディレクトリが誤検知されないことを示している。
 
+### なぜ自分の feature までエイリアス禁止なのか（選択肢）
+
+この設定では `features/auth` の中から `@/features/auth/hooks/use-login` と書けない。相対パスで書く。
+これは**意図的な規約**で、FSD (Feature-Sliced Design) の
+[`@conarti/eslint-plugin-feature-sliced`](https://github.com/conarti/eslint-plugin-feature-sliced) にも
+`absolute-relative` という専用ルールがある。
+
+> Inside one slice, or inside a layer without slices, imports have to be relative.
+> Across layers they have to be absolute.
+
+利点は feature がディレクトリ名から独立すること（`features/auth` を `features/account` に
+リネームしても中の import は無変更）。代わりに深い階層で `../../` が増える。
+
+逆の規約（**feature 内はエイリアス統一・相対の親参照は全面禁止**）にもできる。
+こちらは feature 名を override に書く必要があるので、**feature ごとに 1 ブロック増える**。
+書き忘れ対策として、先頭に feature 汎用の厳しいルールを置いて安全網にする
+（overrides は後勝ちなので、専用ブロックのある feature だけ緩和される）。
+
+```jsonc
+"overrides": [
+  // 安全網: 専用ブロックを書き忘れた feature はこれが効く
+  { "includes": ["src/features/**"], /* group: ["@/features/**", "../**"] */ },
+  // auth だけ自分自身のエイリアスを許可
+  { "includes": ["src/features/auth/**"],
+    /* group: ["@/features/**", "!@/features/auth/**", "../**"] */ }
+]
+```
+
+動作は実測済み（`@/features/auth/...` は許可、`@/features/payment` は検出、
+`../hooks/h` は検出、override 未定義の feature は安全網が検出）。
+どちらが好みかはチームによる。このリポジトリは「設定を増やさない」方を採った。
+
 ### 既知の限界
 
 パス解決をしないので、**文字列として想定外の形は理屈上すり抜けうる**
@@ -157,6 +189,19 @@ ESLint の `import/no-restricted-paths` のほうがこの点は厳密。
 設定を書くと起動時に `Rule 'no-restricted-paths' not found in plugin 'import'` で落ちる。
 `no-restricted-imports` は実装済みなので同じ書き方はできるが、
 フォーマッタも兼ねる Biome のほうがこの用途では扱いやすい。
+
+そもそも **Biome / oxlint には「レイヤー境界」を直接表現するルールが存在しない**。
+Biome には Nx 風の `enforce-module-boundaries` 相当を求める
+[Discussion #6245](https://github.com/biomejs/biome/discussions/6245) が立っており、
+メンテナも実装可能性を認めつつ未実装。そこでは本 README と同じ制約が挙げられている。
+
+- ブラックリスト方式しかない（「これだけ許可」というホワイトリストが書けない）
+- 絶対パスと相対パスの両方を自分で列挙しないといけない
+- **同一ファイルに複数の制限が当たったときの挙動が未定義**（= overrides が後勝ちで全置換）
+
+`eslint-plugin-boundaries` / `dependency-cruiser` / Nx はモジュールを実際に解決して
+レイヤーに「タグ」を付けて関係を宣言できるため、この用途では本質的に素直。
+「Biome に移行できない唯一の理由がこれ」というコメントも同 Discussion にある。
 
 ## UI ライブラリを使っていない理由
 
