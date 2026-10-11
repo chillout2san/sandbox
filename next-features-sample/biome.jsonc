@@ -1,0 +1,180 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "files": {
+    "includes": ["src/**/*.{ts,tsx}", "*.{ts,json}"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 90
+  },
+  "linter": {
+    "enabled": true,
+    "rules": { "preset": "recommended" }
+  },
+  "assist": {
+    "actions": { "source": { "organizeImports": "on" } }
+  },
+  "javascript": {
+    "formatter": { "quoteStyle": "double", "semicolons": "always" }
+  },
+
+  // ========================================================================
+  // レイヤー境界。目的は app -> features -> components の一方通行を保つこと。
+  //
+  // 前提となる Biome の性質が 3 つある。
+  //
+  //  1. `noRestrictedImports` は「解決後のパス」ではなく「import 文の文字列」に
+  //     マッチする。よってエイリアス形 (`@/features/...`) と相対形 (`../../...`)
+  //     の両方を塞ぐ必要がある。
+  //  2. overrides は同じルールに対してマージされず「後勝ちで全置換」される。
+  //     よって 1 ファイルに効かせたいパターンは 1 つの override に全部書く。
+  //  3. `includes` の `*` は `/` を跨がない。`src/features/*/*` は feature 直下の
+  //     ファイルだけにマッチする = 「ディレクトリの深さ」で場合分けできる。
+  //
+  // この 3 を利用して、feature 名もサブディレクトリ名も設定に書かずに済ませている。
+  // 深さごとに「何階層上がったら feature の外に出るか」が決まるので、
+  // その 1 つ上を丸ごと禁止すればよい。
+  //
+  //   src/features/auth/index.ts            → `../` で既に features/ に出る → `../**` 禁止
+  //   src/features/auth/hooks/use-x.ts      → `../` は auth 内 → `../../**` 禁止
+  //   src/features/auth/a/b/c.ts            → `../../` は auth 内 → `../../../**` 禁止
+  //
+  // 結果として feature を増やしても、feature 内にサブディレクトリを増やしても、
+  // この設定は一切変更しなくてよい。
+  // ========================================================================
+  "overrides": [
+    // ---- 共有レイヤー: 最下層。feature と app を知ってはいけない ----
+    {
+      "includes": ["src/components/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/features/**", "**/features/**", "@/app/**"],
+                    "message": "src/components は共有レイヤーです。feature / app に依存させず、必要なものは props で受け取ってください。"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+
+    // ---- feature 直下のファイル (src/features/<x>/*.ts) ----
+    // ここから見ると `../` は既に features/ なので、相対の親参照は全面禁止。
+    {
+      "includes": ["src/features/*/*"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "../**",
+                      "@/app/**",
+                      "@/components/*/**"
+                    ],
+                    "message": "feature の外には出られません。自分の feature 内は相対パス、共有部品は `@/components` を使ってください。"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+
+    // ---- feature 内 1 階層目 (src/features/<x>/<sub>/*.ts) ----
+    // `../` は自分の feature 内なので許可。`../../` 以上を禁止。
+    {
+      "includes": ["src/features/*/*/*"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "../../**",
+                      "@/app/**",
+                      "@/components/*/**"
+                    ],
+                    "message": "feature の外には出られません。自分の feature 内は相対パス、共有部品は `@/components` を使ってください。"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+
+    // ---- feature 内 2 階層目 (src/features/<x>/<sub>/<sub>/*.ts) ----
+    {
+      "includes": ["src/features/*/*/*/*"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/**",
+                      "../../../**",
+                      "@/app/**",
+                      "@/components/*/**"
+                    ],
+                    "message": "feature の外には出られません。自分の feature 内は相対パス、共有部品は `@/components` を使ってください。"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+
+    // ---- ルーティング層: feature / 共有部品は公開 API (index.ts) 経由のみ ----
+    {
+      "includes": ["src/app/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "@/features/*/**",
+                      "**/features/*/**",
+                      "@/components/*/**"
+                    ],
+                    "message": "内部実装への直接 import は禁止です。`@/features/auth` や `@/components` のように公開 API (index.ts) 経由で import してください。"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

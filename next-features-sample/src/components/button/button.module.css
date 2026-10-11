@@ -1,0 +1,114 @@
+/*
+ * 生の色やサイズを一切書かず、globals.css のセマンティックトークンだけを参照する。
+ * これが守られている限り、配色やダークモードはトークン側だけで制御できる。
+ */
+
+.base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--easing-standard),
+    border-color var(--duration-fast) var(--easing-standard),
+    opacity var(--duration-fast) var(--easing-standard);
+}
+
+.base:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- variant ---- */
+.primary {
+  background: var(--accent-default);
+  color: var(--text-on-accent);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.secondary {
+  background: var(--bg-surface);
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--bg-subtle);
+  border-color: var(--border-strong);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.danger {
+  background: var(--danger-default);
+  color: var(--text-on-accent);
+}
+
+.danger:hover:not(:disabled) {
+  background: var(--danger-hover);
+}
+
+/* ---- size ---- */
+.sm {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-sm);
+  min-height: 1.75rem;
+}
+
+.md {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-md);
+  min-height: 2.25rem;
+}
+
+.lg {
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--font-size-lg);
+  min-height: 2.75rem;
+}
+
+/* ---- modifier ---- */
+.fullWidth {
+  width: 100%;
+}
+
+.spinner {
+  width: 0.875em;
+  height: 0.875em;
+  border: 2px solid currentcolor;
+  border-top-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin 600ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .base {
+    transition: none;
+  }
+
+  .spinner {
+    animation-duration: 2s;
+  }
+}

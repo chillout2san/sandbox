@@ -1,0 +1,141 @@
+/*
+ * デザイントークン + 最小リセット。
+ *
+ * UI ライブラリを入れず、ここが「自前デザインシステム」の土台になる。
+ * トークンは 2 層構成にするのが定石:
+ *   1. プリミティブ (--color-gray-500 など) … 生の値。意味を持たない
+ *   2. セマンティック (--bg-surface など)   … 用途で名付ける。参照するのは常にこちら
+ * コンポーネント側がプリミティブを直接触らないので、配色変更やダークモードは
+ * セマンティック層の差し替えだけで済む。
+ */
+
+:root {
+  /* ---- 1. プリミティブトークン ---- */
+  --color-white: #ffffff;
+  --color-gray-50: #f8f9fa;
+  --color-gray-100: #f1f3f5;
+  --color-gray-200: #e9ecef;
+  --color-gray-300: #dee2e6;
+  --color-gray-500: #adb5bd;
+  --color-gray-600: #868e96;
+  --color-gray-700: #495057;
+  --color-gray-800: #343a40;
+  --color-gray-900: #212529;
+  --color-gray-950: #121416;
+
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-green-600: #16a34a;
+
+  /* ---- 2. セマンティックトークン (light) ---- */
+  --bg-canvas: var(--color-gray-50);
+  --bg-surface: var(--color-white);
+  --bg-subtle: var(--color-gray-100);
+  --border-default: var(--color-gray-300);
+  --border-strong: var(--color-gray-500);
+  --text-primary: var(--color-gray-900);
+  --text-secondary: var(--color-gray-700);
+  --text-muted: var(--color-gray-600);
+  --text-on-accent: var(--color-white);
+
+  --accent-default: var(--color-blue-600);
+  --accent-hover: var(--color-blue-700);
+  --accent-ring: var(--color-blue-500);
+  --danger-default: var(--color-red-600);
+  --danger-hover: var(--color-red-500);
+  --success-default: var(--color-green-600);
+
+  /* ---- スケール ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 999px;
+
+  --font-size-sm: 0.8125rem;
+  --font-size-md: 0.9375rem;
+  --font-size-lg: 1.0625rem;
+  --font-size-xl: 1.375rem;
+  --font-size-2xl: 1.75rem;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 6%);
+  --shadow-md: 0 2px 8px rgb(0 0 0 / 8%);
+
+  --duration-fast: 120ms;
+  --easing-standard: cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* セマンティック層だけ差し替える。コンポーネント側は無変更 */
+    --bg-canvas: var(--color-gray-950);
+    --bg-surface: var(--color-gray-900);
+    --bg-subtle: var(--color-gray-800);
+    --border-default: var(--color-gray-700);
+    --border-strong: var(--color-gray-600);
+    --text-primary: var(--color-gray-100);
+    --text-secondary: var(--color-gray-300);
+    --text-muted: var(--color-gray-500);
+
+    --accent-default: var(--color-blue-500);
+    --accent-hover: var(--color-blue-600);
+  }
+}
+
+/* ---- 最小リセット ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--accent-default);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-ring);
+  outline-offset: 2px;
+}
